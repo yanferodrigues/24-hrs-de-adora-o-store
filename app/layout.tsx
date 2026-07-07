@@ -28,11 +28,11 @@ const mono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "24 Horas de Adoração · Camiseta Oficial do Congresso",
   description:
-    "A camiseta oficial do congresso 24 Horas de Adoração. O Rei no cavalo, uma estampa, duas versões — preta e branca. Edição limitada, entrega antes de 15/10/2026.",
+    "A camiseta oficial do congresso 24 Horas de Adoração. O Rei no cavalo, em algodão premium. Edição limitada, entrega antes de 15/10/2026.",
   openGraph: {
     title: "24 Horas de Adoração · Camiseta Oficial",
     description:
-      "Uma estampa, duas versões. Da noite à glória. Edição do Congresso — estoque limitado.",
+      "A camiseta oficial do congresso. Da noite à glória. Edição limitada — estoque limitado.",
     type: "website",
   },
   robots: { index: true, follow: true },

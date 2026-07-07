@@ -17,7 +17,7 @@ export default function Faq() {
       <div className="wrap grid gap-12 lg:grid-cols-[0.6fr_1fr]">
         <Reveal>
           <div>
-            <p className="eyebrow mb-3">07 — Dúvidas</p>
+            <p className="eyebrow mb-3">06 — Dúvidas</p>
             <h2 className="display text-ink" style={{ fontSize: "clamp(2rem,6vw,4rem)" }}>
               Tudo claro
             </h2>

@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useStore, versionLabel } from "@/lib/store";
+import { useStore } from "@/lib/store";
 import BuyButton from "./BuyButton";
 
 export default function StickyBuyBar() {
-  const mood = useStore((s) => s.mood);
   const size = useStore((s) => s.size);
   const [show, setShow] = useState(false);
 
@@ -34,7 +33,7 @@ export default function StickyBuyBar() {
         >
           <div className="min-w-0">
             <div className="truncate font-mono text-[10px] uppercase tracking-[0.18em] text-mute-2">
-              Camiseta {versionLabel(mood)} · tam. {size}
+              Camiseta Preta · tam. {size}
             </div>
             <div className="display text-2xl text-ink">R$ 80</div>
           </div>

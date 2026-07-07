@@ -12,7 +12,7 @@ export default function FinalCta() {
         <Reveal>
           <p className="eyebrow flex items-center gap-3">
             <span className="inline-block h-px w-8 bg-[var(--accent)]" />
-            08 — Última chamada
+            07 — Última chamada
           </p>
         </Reveal>
       </div>

@@ -8,7 +8,6 @@ import Hero from "@/components/sections/Hero";
 import Manifesto from "@/components/sections/Manifesto";
 import ArtReveal from "@/components/sections/ArtReveal";
 import Features from "@/components/sections/Features";
-import VersionToggle from "@/components/sections/VersionToggle";
 import Gallery from "@/components/sections/Gallery";
 import SizeGuide from "@/components/sections/SizeGuide";
 import Faq from "@/components/sections/Faq";
@@ -30,7 +29,6 @@ export default function Page() {
         <Manifesto />
         <ArtReveal />
         <Features />
-        <VersionToggle />
         <Gallery />
         <SizeGuide />
         <Faq />

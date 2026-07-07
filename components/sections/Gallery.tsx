@@ -18,7 +18,7 @@ export default function Gallery() {
     >
       <div className="wrap">
         <Reveal>
-          <p className="eyebrow mb-3">05 — Galeria</p>
+          <p className="eyebrow mb-3">04 — Galeria</p>
           <h2 className="display text-ink" style={{ fontSize: "clamp(2rem,6vw,4rem)" }}>
             Vestida na vida real
           </h2>

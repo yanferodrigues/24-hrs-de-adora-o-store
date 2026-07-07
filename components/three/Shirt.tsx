@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
@@ -9,9 +9,8 @@ import { useStore } from "@/lib/store";
 const MODEL = "/tshirt.glb";
 const TARGET_HEIGHT = 2.6; // altura desejada em unidades de cena
 
-// cores do tecido conforme o momento (modelo é branco → tingimos)
-const NIGHT_COLOR = new THREE.Color("#ededea");
-const DAWN_COLOR = new THREE.Color("#1a1a1d");
+// camiseta preta (modelo é branco → tingimos de escuro)
+const SHIRT_COLOR = new THREE.Color("#17171a");
 
 function damp(current: number, target: number, lambda: number, dt: number) {
   return THREE.MathUtils.damp(current, target, lambda, dt);
@@ -20,10 +19,8 @@ function damp(current: number, target: number, lambda: number, dt: number) {
 export function Shirt() {
   const { scene } = useGLTF(MODEL);
   const outer = useRef<THREE.Group>(null);
-  const mats = useRef<THREE.MeshStandardMaterial[]>([]);
-  const targetColor = useRef(new THREE.Color().copy(NIGHT_COLOR));
 
-  // clona a cena, normaliza escala/centro e coleta materiais para tingir
+  // clona a cena, normaliza escala/centro e tinge de preto
   const model = useMemo(() => {
     const root = scene.clone(true);
     const box = new THREE.Box3().setFromObject(root);
@@ -39,7 +36,6 @@ export function Shirt() {
     wrapper.add(root);
     wrapper.scale.setScalar(scale);
 
-    const collected: THREE.MeshStandardMaterial[] = [];
     root.traverse((obj) => {
       const mesh = obj as THREE.Mesh;
       if (mesh.isMesh) {
@@ -50,7 +46,7 @@ export function Shirt() {
           const cloned = std.clone();
           cloned.roughness = Math.min(0.85, (std.roughness ?? 0.7) + 0.1);
           cloned.metalness = 0.0;
-          collected.push(cloned);
+          cloned.color.copy(SHIRT_COLOR);
           return cloned;
         };
         mesh.material = Array.isArray(mesh.material)
@@ -58,15 +54,8 @@ export function Shirt() {
           : apply(mesh.material);
       }
     });
-    mats.current = collected;
     return wrapper;
   }, [scene]);
-
-  // atualiza o alvo de cor quando o mood muda
-  const mood = useStore((s) => s.mood);
-  useEffect(() => {
-    targetColor.current.copy(mood === "night" ? NIGHT_COLOR : DAWN_COLOR);
-  }, [mood]);
 
   useFrame((state, dt) => {
     const p = useStore.getState().scrollProgress;
@@ -95,12 +84,6 @@ export function Shirt() {
     const xOffset = heroX + finalX;
     g.position.x = damp(g.position.x, xOffset, 3.5, dt);
     g.position.y = damp(g.position.y, Math.sin(t * 0.5) * 0.06, 3, dt);
-
-    // tinge o tecido suavemente
-    const dl = 1 - Math.exp(-6 * dt);
-    for (const m of mats.current) {
-      m.color.lerp(targetColor.current, dl);
-    }
   });
 
   return (

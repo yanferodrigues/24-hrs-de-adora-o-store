@@ -51,9 +51,8 @@ export default function Hero() {
         >
           <p className="max-w-md text-[15px] leading-relaxed text-mute">
             A camiseta oficial do congresso. Uma estampa —{" "}
-            <b className="text-ink">o Rei no cavalo</b> — em duas versões, preta e
-            branca. Use o seletor <b className="text-ink">Noite / Amanhecer</b> e
-            veja a peça mudar de mundo.
+            <b className="text-ink">o Rei no cavalo</b> — em algodão premium.
+            Edição limitada, entrega antes do congresso.
           </p>
           <div className="flex flex-col items-start gap-3">
             <BuyButton showPrice />

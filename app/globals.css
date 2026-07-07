@@ -3,28 +3,12 @@
 @tailwind utilities;
 
 :root {
-  /* TEMA — default = NOITE (fundo preto, camiseta clara) */
-  --bg: #0a0a0b;
-  --surface: #141416;
-  --surface-2: #0f0f11;
-  --line: #262629;
-  --line-soft: #1b1b1e;
-  --ink: #ffffff;
-  --mute: #9a9aa0;
-  --mute-2: #5c5c62;
-  --accent: #ffffff;
-  --accent-on: #0a0a0b;
-  --glow: 255, 255, 255;
-  color-scheme: dark;
-}
-
-/* AMANHECER — fundo branco, camiseta escura */
-:root[data-mood="dawn"] {
+  /* TEMA único — fundo branco, camiseta preta */
   --bg: #fafaf8;
   --surface: #ffffff;
   --surface-2: #f1f1ee;
   --line: #e3e3de;
-  --line-soft: #ececE7;
+  --line-soft: #ecece7;
   --ink: #0a0a0b;
   --mute: #5f5f63;
   --mute-2: #a2a29c;

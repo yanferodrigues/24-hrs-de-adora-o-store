@@ -72,10 +72,7 @@ export default function CartDrawer() {
                     >
                       <div
                         className="h-20 w-16 shrink-0 rounded-lg border border-line"
-                        style={{
-                          background:
-                            item.version === "Preta" ? "#0f0f11" : "#eaeae7",
-                        }}
+                        style={{ background: "#0f0f11" }}
                       />
                       <div className="flex flex-1 flex-col">
                         <div className="flex items-start justify-between gap-2">

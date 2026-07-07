@@ -16,7 +16,7 @@ export default function SizeGuide() {
       <div className="wrap grid gap-12 lg:grid-cols-2">
         <div>
           <Reveal>
-            <p className="eyebrow mb-3">06 — Tamanhos</p>
+            <p className="eyebrow mb-3">05 — Tamanhos</p>
             <h2 className="display text-ink" style={{ fontSize: "clamp(2rem,6vw,4rem)" }}>
               Escolha sem erro
             </h2>

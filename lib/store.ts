@@ -2,8 +2,7 @@
 
 import { create } from "zustand";
 
-export type Mood = "night" | "dawn";
-export type Version = "Preta" | "Branca";
+export type Version = "Preta";
 
 export interface CartItem {
   id: string; // `${version}-${size}`
@@ -14,10 +13,6 @@ export interface CartItem {
 }
 
 interface StoreState {
-  /** night = camiseta preta (fundo escuro) · dawn = camiseta branca (fundo claro) */
-  mood: Mood;
-  setMood: (m: Mood) => void;
-  toggleMood: () => void;
   /** progresso global do scroll 0..1 — compartilhado com a cena 3D */
   scrollProgress: number;
   setScrollProgress: (p: number) => void;
@@ -34,9 +29,6 @@ interface StoreState {
 }
 
 export const useStore = create<StoreState>((set) => ({
-  mood: "night",
-  setMood: (mood) => set({ mood }),
-  toggleMood: () => set((s) => ({ mood: s.mood === "night" ? "dawn" : "night" })),
   scrollProgress: 0,
   setScrollProgress: (scrollProgress) => set({ scrollProgress }),
   size: "M",
@@ -63,6 +55,3 @@ export const useStore = create<StoreState>((set) => ({
       cart: s.cart.map((c) => (c.id === id ? { ...c, qty: Math.max(1, qty) } : c)),
     })),
 }));
-
-/** Rótulo da versão de camiseta conforme o mood. */
-export const versionLabel = (m: Mood): Version => (m === "night" ? "Preta" : "Branca");

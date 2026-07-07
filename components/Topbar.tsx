@@ -4,14 +4,7 @@ import { useEffect, useState } from "react";
 import { useStore } from "@/lib/store";
 
 export default function Topbar() {
-  const mood = useStore((s) => s.mood);
-  const setMood = useStore((s) => s.setMood);
   const [progress, setProgress] = useState(0);
-
-  // reflete o mood no <html data-mood> para a troca de tema
-  useEffect(() => {
-    document.documentElement.setAttribute("data-mood", mood);
-  }, [mood]);
 
   useEffect(() => {
     const unsub = useStore.subscribe((s) => setProgress(s.scrollProgress));
@@ -46,28 +39,6 @@ export default function Topbar() {
         >
           24H DE <b className="font-semibold">ADORAÇÃO</b>
         </a>
-
-        <div
-          role="group"
-          aria-label="Momento do dia"
-          className="flex items-center gap-0.5 rounded-full border border-line bg-surface p-[3px]"
-        >
-          {(["night", "dawn"] as const).map((m) => (
-            <button
-              key={m}
-              aria-pressed={mood === m}
-              onClick={() => setMood(m)}
-              className="rounded-full px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] transition-colors"
-              style={{
-                color: mood === m ? "var(--accent-on)" : "var(--mute)",
-                background: mood === m ? "var(--accent)" : "transparent",
-                fontWeight: mood === m ? 700 : 400,
-              }}
-            >
-              {m === "night" ? "Noite" : "Amanhecer"}
-            </button>
-          ))}
-        </div>
       </header>
     </>
   );

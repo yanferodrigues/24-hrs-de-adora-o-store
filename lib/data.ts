@@ -78,10 +78,6 @@ export const FAQ = [
     a: "Pix (com confirmação na hora) e cartão de crédito em até 12x. O pagamento é processado em ambiente seguro.",
   },
   {
-    q: "Qual a diferença entre a versão preta e a branca?",
-    a: "Nenhuma na arte — é exatamente a mesma estampa. Muda só a cor da camiseta: escolha a que mais combina com você.",
-  },
-  {
     q: "Como lavar sem estragar a estampa?",
     a: "Lave do avesso, com água fria e sabão neutro, e evite secadora. Assim a impressão dura muito mais.",
   },

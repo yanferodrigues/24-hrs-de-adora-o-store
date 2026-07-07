@@ -6,7 +6,7 @@ import { Minus, Plus, Truck, RefreshCw, ShieldCheck, type LucideIcon } from "luc
 import ShopHeader from "@/components/shop/ShopHeader";
 import CartDrawer from "@/components/shop/CartDrawer";
 import { PRODUCT } from "@/lib/data";
-import { useStore, versionLabel, type Version } from "@/lib/store";
+import { useStore } from "@/lib/store";
 
 const ProductViewer3D = dynamic(
   () => import("@/components/shop/ProductViewer3D"),
@@ -16,10 +16,8 @@ const ProductViewer3D = dynamic(
 const DETAILS = ["Costas", "Detalhe · gola", "Detalhe · estampa"];
 
 export default function ProdutoPage() {
-  const mood = useStore((s) => s.mood);
   const addToCart = useStore((s) => s.addToCart);
 
-  const [version, setVersion] = useState<Version>(versionLabel(mood));
   const [size, setSize] = useState<string>("M");
   const [qty, setQty] = useState(1);
 
@@ -37,7 +35,7 @@ export default function ProdutoPage() {
                 "radial-gradient(120% 120% at 50% 35%, var(--surface), var(--surface-2))",
             }}
           >
-            <ProductViewer3D version={version} />
+            <ProductViewer3D />
             <span className="pointer-events-none absolute bottom-4 left-4 font-mono text-[10px] uppercase tracking-[0.2em] text-mute-2">
               Arraste para girar · 360°
             </span>
@@ -97,35 +95,8 @@ export default function ProdutoPage() {
             Adoração</b>. Estampa do Rei montado no cavalo com a multidão em
             adoração (Apocalipse 19), impressa em algodão premium de gramatura
             alta. Corte oversized streetwear, acabamento reforçado e estampa de
-            alta durabilidade. Uma arte, duas versões.
+            alta durabilidade.
           </p>
-
-          {/* Versão */}
-          <div className="mt-8">
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-mute-2">
-              Versão · <span className="text-ink">{version}</span>
-            </span>
-            <div className="mt-3 flex gap-3">
-              {(["Preta", "Branca"] as Version[]).map((v) => (
-                <button
-                  key={v}
-                  onClick={() => setVersion(v)}
-                  aria-pressed={version === v}
-                  className="flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors"
-                  style={{
-                    borderColor: version === v ? "var(--ink)" : "var(--line)",
-                    color: "var(--ink)",
-                  }}
-                >
-                  <span
-                    className="h-4 w-4 rounded-full border border-line"
-                    style={{ background: v === "Preta" ? "#0f0f11" : "#f4f4f1" }}
-                  />
-                  {v}
-                </button>
-              ))}
-            </div>
-          </div>
 
           {/* Tamanho */}
           <div className="mt-6">
@@ -175,7 +146,7 @@ export default function ProdutoPage() {
 
             <button
               onClick={() =>
-                addToCart({ version, size, qty, price: PRODUCT.price })
+                addToCart({ version: "Preta", size, qty, price: PRODUCT.price })
               }
               className="btn-magnetic flex-1"
             >
