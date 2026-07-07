@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* TEMA — default = NOITE (fundo preto, camiseta clara) */
+  --bg: #0a0a0b;
+  --surface: #141416;
+  --surface-2: #0f0f11;
+  --line: #262629;
+  --line-soft: #1b1b1e;
+  --ink: #ffffff;
+  --mute: #9a9aa0;
+  --mute-2: #5c5c62;
+  --accent: #ffffff;
+  --accent-on: #0a0a0b;
+  --glow: 255, 255, 255;
+  color-scheme: dark;
+}
+
+/* AMANHECER — fundo branco, camiseta escura */
+:root[data-mood="dawn"] {
+  --bg: #fafaf8;
+  --surface: #ffffff;
+  --surface-2: #f1f1ee;
+  --line: #e3e3de;
+  --line-soft: #ececE7;
+  --ink: #0a0a0b;
+  --mute: #5f5f63;
+  --mute-2: #a2a29c;
+  --accent: #0a0a0b;
+  --accent-on: #ffffff;
+  --glow: 10, 10, 11;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--mute);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  transition: background 0.7s ease, color 0.7s ease;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+/* ---- utility layers ---- */
+@layer components {
+  .wrap {
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--mute-2);
+  }
+
+  .display {
+    font-family: var(--font-display), "Arial Narrow", sans-serif;
+    text-transform: uppercase;
+    font-weight: 600;
+    line-height: 0.9;
+    letter-spacing: 0.005em;
+  }
+
+  .outline-text {
+    color: transparent;
+    -webkit-text-stroke: 1.4px var(--ink);
+  }
+
+  /* Inversão dinâmica: letra branca que fica preta sobre áreas claras
+     (e branca sobre áreas escuras), pixel a pixel, contra o que está atrás
+     — inclusive a camiseta 3D. Funciona nos dois temas. */
+  .blend-invert {
+    color: #ffffff !important;
+    mix-blend-mode: difference;
+  }
+  .blend-invert .outline-text {
+    -webkit-text-stroke-color: #ffffff;
+  }
+
+  .btn-magnetic {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: var(--font-mono), monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-on);
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    padding: 16px 28px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.25s ease, background 0.4s ease, color 0.4s ease;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--line);
+  }
+}
+
+/* film grain overlay */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
