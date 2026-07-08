@@ -1,6 +1,15 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { Reveal } from "@/components/Reveal";
+
+const line = {
+  hidden: { y: "110%" },
+  show: (i: number) => ({
+    y: "0%",
+    transition: { duration: 0.9, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] },
+  }),
+};
 
 const points = [
   { n: "A", label: "O Cavaleiro", desc: "Fiel e Verdadeiro, montado no cavalo (Ap 19)." },
@@ -13,14 +22,37 @@ export default function ArtReveal() {
     <section className="relative min-h-[100svh] py-24">
       {/* palco: a camiseta 3D aparece atrás (canvas fixo) */}
       <div className="wrap flex h-full flex-col justify-between">
-        <Reveal>
-          <div className="max-w-md">
+        <div className="max-w-md">
+          <Reveal>
             <p className="eyebrow mb-4">02 — A Arte</p>
-            <h2 className="display blend-invert" style={{ fontSize: "clamp(2.4rem,7vw,5rem)" }}>
-              Uma cena.<br />Impressa para durar.
-            </h2>
-          </div>
-        </Reveal>
+          </Reveal>
+          {/* blend-invert fora de qualquer wrapper que isole o stacking context
+              (Reveal cria um) — animação nas máscaras internas, como no Hero. */}
+          <h2 className="display blend-invert" style={{ fontSize: "clamp(2.4rem,7vw,5rem)" }}>
+            <span className="block overflow-hidden py-[0.14em] -my-[0.14em]">
+              <motion.span
+                custom={0}
+                variants={line}
+                initial="hidden"
+                animate="show"
+                className="block"
+              >
+                Uma cena.
+              </motion.span>
+            </span>
+            <span className="block overflow-hidden py-[0.14em] -my-[0.14em]">
+              <motion.span
+                custom={1}
+                variants={line}
+                initial="hidden"
+                animate="show"
+                className="block"
+              >
+                Impressa para adorar.
+              </motion.span>
+            </span>
+          </h2>
+        </div>
 
         <div className="mt-auto grid gap-4 pt-16 sm:grid-cols-3">
           {points.map((p, i) => (

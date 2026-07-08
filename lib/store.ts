@@ -26,6 +26,7 @@ interface StoreState {
   addToCart: (item: Omit<CartItem, "id">) => void;
   removeFromCart: (id: string) => void;
   setQty: (id: string, qty: number) => void;
+  clearCart: () => void;
 }
 
 export const useStore = create<StoreState>((set) => ({
@@ -54,4 +55,5 @@ export const useStore = create<StoreState>((set) => ({
     set((s) => ({
       cart: s.cart.map((c) => (c.id === id ? { ...c, qty: Math.max(1, qty) } : c)),
     })),
+  clearCart: () => set({ cart: [] }),
 }));

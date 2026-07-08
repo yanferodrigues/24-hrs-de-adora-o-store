@@ -80,13 +80,12 @@ export default function ProdutoPage() {
             className="display text-ink"
             style={{ fontSize: "clamp(2rem,5vw,3.2rem)" }}
           >
-            Camiseta Oficial — O Rei no Cavalo
+            Camiseta Oficial EDIÇÃO 2026
           </h1>
 
           <div className="mt-4 flex items-baseline gap-3">
             <span className="display text-4xl text-ink">{PRODUCT.priceLabel}</span>
             <span className="font-mono text-[11px] uppercase tracking-wider text-mute-2">
-              ou 12x de R$ 6,67
             </span>
           </div>
 
@@ -159,7 +158,6 @@ export default function ProdutoPage() {
             {(
               [
                 { icon: Truck, label: "Entrega antes do congresso" },
-                { icon: RefreshCw, label: "Troca em 7 dias" },
                 { icon: ShieldCheck, label: "Pagamento seguro · Pix" },
               ] as { icon: LucideIcon; label: string }[]
             ).map(({ icon: Icon, label }) => (

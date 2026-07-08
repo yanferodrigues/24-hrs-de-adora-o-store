@@ -1,8 +1,8 @@
 export const PRODUCT = {
   brand: "24 Horas de Adoração",
   name: "Camiseta Oficial · Edição do Congresso",
-  price: 80,
-  priceLabel: "R$ 80",
+  price: 1, // ⚠️ TESTE — pagamento real de R$ 1. REVERTER PARA 80 depois do teste.
+  priceLabel: "R$ 1", // ⚠️ TESTE — REVERTER PARA "R$ 80"
   currency: "BRL",
   eventDate: "2026-10-15T00:00:00-03:00", // 15/10/2026
   eventDateLabel: "15 de outubro de 2026",
@@ -71,18 +71,14 @@ export const SIZE_GUIDE = [
 export const FAQ = [
   {
     q: "A entrega chega antes do congresso?",
-    a: "Sim. Pedidos feitos com antecedência são despachados para chegar antes de 15 de outubro de 2026. No checkout você vê o prazo estimado para o seu CEP.",
+    a: "Sim. Pedidos feitos com antecedência são despachados para chegar antes de 15 de outubro de 2026. Entre em contato conosco para mais informações de retirada.",
   },
   {
     q: "Quais formas de pagamento?",
-    a: "Pix (com confirmação na hora) e cartão de crédito em até 12x. O pagamento é processado em ambiente seguro.",
+    a: "Pix (com confirmação na hora) e cartão. O pagamento é processado em ambiente seguro.",
   },
   {
     q: "Como lavar sem estragar a estampa?",
     a: "Lave do avesso, com água fria e sabão neutro, e evite secadora. Assim a impressão dura muito mais.",
-  },
-  {
-    q: "Posso trocar o tamanho?",
-    a: "Sim. Você tem 7 dias após o recebimento para solicitar troca de tamanho, desde que a peça esteja sem uso e com etiqueta.",
   },
 ];

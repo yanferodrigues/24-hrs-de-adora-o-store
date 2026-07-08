@@ -13,6 +13,8 @@ export default function SmoothScroll({
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Celular/tablet (toque, sem mouse) → scroll NATIVO, sem Lenis (zero atraso).
+    const isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
     const update = () => {
       const max = document.documentElement.scrollHeight - window.innerHeight;
@@ -20,18 +22,18 @@ export default function SmoothScroll({
       setScrollProgress(Math.min(1, Math.max(0, p)));
     };
 
-    if (reduce) {
+    if (reduce || isTouch) {
       window.addEventListener("scroll", update, { passive: true });
       update();
       return () => window.removeEventListener("scroll", update);
     }
 
+    // Desktop → scroll suave e fluido, mas responsivo (sem sequestrar o toque).
     const lenis = new Lenis({
-      lerp: 1, // interpolação leve e responsiva (sem o arrasto do modo duration)
-      wheelMultiplier: 1.2,
+      lerp: 2, // suavização leve: fluido no PC sem parecer atrasado
+      wheelMultiplier: 1,
       smoothWheel: true,
-      syncTouch: true,
-      touchMultiplier: 1.2,
+      syncTouch: false,
     });
 
     lenis.on("scroll", update);

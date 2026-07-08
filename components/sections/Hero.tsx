@@ -25,20 +25,20 @@ export default function Hero() {
           className="eyebrow flex items-center gap-3"
         >
           <span className="inline-block h-px w-8 bg-[var(--accent)]" />
-          Edição do Congresso · Estoque limitado
+          Edição 2026 · Estoque limitado
         </motion.p>
       </div>
 
       <div className="wrap">
         <h1 className="display blend-invert" style={{ fontSize: "clamp(3.6rem,15vw,12rem)" }}>
-          <span className="block overflow-hidden">
+          <span className="block overflow-hidden py-[0.14em] -my-[0.14em]">
             <motion.span custom={0} variants={line} initial="hidden" animate="show" className="block">
-              Da noite
+              24 HORAS
             </motion.span>
           </span>
-          <span className="block overflow-hidden">
+          <span className="block overflow-hidden py-[0.14em] -my-[0.14em]">
             <motion.span custom={1} variants={line} initial="hidden" animate="show" className="block">
-              à <span className="outline-text">glória</span>
+              DE <span className="outline-text">ADORAÇÃO</span>
             </motion.span>
           </span>
         </h1>
@@ -50,14 +50,14 @@ export default function Hero() {
           className="mt-7 flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
         >
           <p className="max-w-md text-[15px] leading-relaxed text-mute">
-            A camiseta oficial do congresso. Uma estampa —{" "}
-            <b className="text-ink">o Rei no cavalo</b> — em algodão premium.
-            Edição limitada, entrega antes do congresso.
+            A camiseta oficial do evento.—{" "}
+            <b className="text-ink">o Rei está voltando</b> — em algodão premium.
+            Edição limitada, entrega antes do evento.
           </p>
           <div className="flex flex-col items-start gap-3">
             <BuyButton showPrice />
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-mute-2">
-              12x sem juros · Pix · entrega antes do congresso
+              Pix · entrega antes do congresso ·
             </span>
           </div>
         </motion.div>

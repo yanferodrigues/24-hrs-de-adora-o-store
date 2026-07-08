@@ -37,7 +37,7 @@ export default function Topbar() {
           href="#top"
           className="font-mono text-[11px] uppercase tracking-[0.28em] text-ink"
         >
-          24H DE <b className="font-semibold">ADORAÇÃO</b>
+          24H DE <b className="font-semibold">ADORAÇÃO</b> SHOP
         </a>
       </header>
     </>

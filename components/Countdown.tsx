@@ -14,7 +14,20 @@ function diff(target: number) {
   };
 }
 
-export default function Countdown({ compact = false }: { compact?: boolean }) {
+// Halo claro (cor do fundo) em volta do número: invisível sobre o fundo claro,
+// destaca o número escuro ao passar sobre a camiseta. NÃO usa mix-blend-mode —
+// por isso é estável no timer (que repinta a cada segundo e derrubaria o blend).
+const HALO =
+  "0 0 1px var(--bg), 1px 1px 0 var(--bg), -1px 1px 0 var(--bg), 1px -1px 0 var(--bg), -1px -1px 0 var(--bg), 0 0 10px var(--bg), 0 0 20px var(--bg)";
+
+export default function Countdown({
+  compact = false,
+  blend = false,
+}: {
+  compact?: boolean;
+  /** timer sobre a camiseta 3D: números escuros + halo claro (legível sobre claro e escuro) */
+  blend?: boolean;
+}) {
   const target = new Date(PRODUCT.eventDate).getTime();
   // inicia zerado para casar SSR/cliente (evita mismatch de hidratação)
   const [t, setT] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
@@ -40,11 +53,17 @@ export default function Countdown({ compact = false }: { compact?: boolean }) {
             className={`display tabular-nums text-ink ${
               compact ? "text-3xl" : "text-5xl md:text-6xl"
             }`}
-            style={{ fontVariantNumeric: "tabular-nums" }}
+            style={{
+              fontVariantNumeric: "tabular-nums",
+              textShadow: blend ? HALO : undefined,
+            }}
           >
             {String(v).padStart(2, "0")}
           </span>
-          <span className="mt-1 font-mono text-[9px] uppercase tracking-[0.22em] text-mute-2">
+          <span
+            className="mt-1 font-mono text-[9px] uppercase tracking-[0.22em] text-mute-2"
+            style={{ textShadow: blend ? HALO : undefined }}
+          >
             {l}
           </span>
         </div>

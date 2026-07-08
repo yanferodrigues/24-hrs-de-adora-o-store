@@ -21,10 +21,9 @@ export default function Manifesto() {
               fontWeight: 400,
             }}
           >
-            Ela existe para ser vestida por quem{" "}
-            <span className="text-mute">atravessa a noite adorando</span> — e
-            acorda no amanhecer da vitória. O Rei voltou montado no cavalo, e a
-            multidão O glorifica. Essa é a peça que carrega essa cena.
+            Não é apenas uma camiseta.
+            É também um lembrete {" "}
+             — <span className="text-mute"> O REI ESTÁ VOLTANDO. </span>
           </p>
         </Reveal>
       </div>
