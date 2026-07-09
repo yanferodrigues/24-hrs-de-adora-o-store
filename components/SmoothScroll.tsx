@@ -31,7 +31,7 @@ export default function SmoothScroll({
     // Desktop → scroll suave e fluido, mas responsivo (sem sequestrar o toque).
     const lenis = new Lenis({
       lerp: 2, // suavização leve: fluido no PC sem parecer atrasado
-      wheelMultiplier: 1,
+      wheelMultiplier: 1.5,
       smoothWheel: true,
       syncTouch: false,
     });

@@ -12,6 +12,8 @@ Landing page + página de produto (marketplace) da **24 Horas de Adoração Stor
 > `$env:Path = "$env:USERPROFILE\nodejs;$env:Path"`
 
 - `npm run dev` — servidor de desenvolvimento em http://localhost:3000
+- `npm run dev -- -H 0.0.0.0` — dev acessível na **rede local** (abrir no celular): use `http://<IP-do-PC>:3000` (ex.: `http://10.211.100.92:3000`). Celular na mesma Wi-Fi; se não abrir, liberar a porta 3000 no Firewall do Windows. Descobrir o IP: `(Get-NetIPAddress -AddressFamily IPv4).IPAddress`
+- **Parar o servidor**: se rodou no terminal, `Ctrl + C` na janela. Se subiu em background/travou, mate o Node: `Get-Process node | Stop-Process -Force` (cuidado: mata **todos** os processos `node`).
 - `npm run build` — build de produção (**pare o `npm run dev` antes**: build e dev compartilham `.next` e conflitam → erro `Cannot find module './xxx.js'`; se acontecer, `rm -rf .next` e rebuild)
 - `npm run start` — sobe o build de produção
 

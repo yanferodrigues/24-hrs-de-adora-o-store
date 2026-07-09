@@ -1,8 +1,8 @@
 export const PRODUCT = {
   brand: "24 Horas de Adoração",
   name: "Camiseta Oficial · Edição do Congresso",
-  price: 1, // ⚠️ TESTE — pagamento real de R$ 1. REVERTER PARA 80 depois do teste.
-  priceLabel: "R$ 1", // ⚠️ TESTE — REVERTER PARA "R$ 80"
+  price: 80, // ⚠️ TESTE — pagamento real de R$ 1. REVERTER PARA 80 depois do teste.
+  priceLabel: "R$ 80", // ⚠️ TESTE — REVERTER PARA "R$ 80"
   currency: "BRL",
   eventDate: "2026-10-15T00:00:00-03:00", // 15/10/2026
   eventDateLabel: "15 de outubro de 2026",
