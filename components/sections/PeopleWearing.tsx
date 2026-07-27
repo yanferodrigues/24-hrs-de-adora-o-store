@@ -83,7 +83,7 @@ export default function PeopleWearing() {
 /** moldura vazia — hairline dourada tracejada + o caminho do arquivo esperado */
 function EmptySlot({ file, cap }: { file: string; cap: string }) {
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-surface/60 p-4 text-center">
+    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[var(--surface-2)] p-4 text-center">
       <span
         aria-hidden
         className="absolute inset-2 rounded-lg border border-dashed border-gold-deep/60"

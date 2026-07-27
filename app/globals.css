@@ -109,6 +109,12 @@ body {
   .relic {
     position: relative;
   }
+  /* o lettering foi desenhado em ouro claro para brilhar no preto; no fundo
+     claro ele some, então fechamos o tom para virar ouro velho/bronze.
+     Só para a arte de lettering — a ilustração colorida vai sem filtro. */
+  .relic-ink img {
+    filter: brightness(0.6) saturate(1.55) contrast(1.1);
+  }
 
   /* costura sagrada: hairline dourada com marca vermelha no centro */
   .seam {

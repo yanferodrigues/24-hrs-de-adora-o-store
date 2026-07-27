@@ -30,7 +30,7 @@ export default function Footer() {
       <div className="wrap flex flex-col gap-10">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div className="display text-3xl sm:text-4xl">
-            <span className="gold-text">Ele disse: voltarei</span>
+            <span className="gold-text">"Em breve voltarei"</span>
           </div>
           <div className="flex gap-4 text-mute">
             <a
