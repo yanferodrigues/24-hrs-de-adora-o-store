@@ -10,15 +10,15 @@ export default function Faq() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section
-      className="relative z-10 py-28"
-      style={{ background: "var(--bg)" }}
-    >
+    <section className="relative py-28">
       <div className="wrap grid gap-12 lg:grid-cols-[0.6fr_1fr]">
         <Reveal>
           <div>
-            <p className="eyebrow mb-3">06 — Dúvidas</p>
-            <h2 className="display text-ink" style={{ fontSize: "clamp(2rem,6vw,4rem)" }}>
+            <p className="sacred mb-4">Dúvidas</p>
+            <h2
+              className="display text-parchment"
+              style={{ fontSize: "clamp(2rem,5.5vw,3.6rem)", lineHeight: 1.04 }}
+            >
               Tudo claro
             </h2>
           </div>
@@ -34,10 +34,12 @@ export default function Faq() {
                   className="flex w-full items-center justify-between gap-4 py-5 text-left"
                   aria-expanded={isOpen}
                 >
-                  <span className="text-[15px] font-medium text-ink">{item.q}</span>
+                  <span className="text-[15px] font-medium text-parchment">
+                    {item.q}
+                  </span>
                   <Plus
                     size={18}
-                    className="shrink-0 text-mute transition-transform duration-300"
+                    className="shrink-0 text-gold transition-transform duration-300"
                     style={{ transform: isOpen ? "rotate(45deg)" : "none" }}
                   />
                 </button>

@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Projeto
 
-Landing page + página de produto (marketplace) da **24 Horas de Adoração Store** — camiseta oficial do congresso de jovens. Uma estampa (o Rei no cavalo, Ap 19), duas versões: **Preta** e **Branca**. Estética **dark premium neutra** (preto↔branco, sem outras cores), estilo Nike. Preço **R$ 80**, evento **15/10/2026**.
+Landing page + página de produto (marketplace) da **24 Horas de Adoração Store** — camiseta oficial **VOLTAREI** do congresso de jovens (o Rei no cavalo branco, **Apocalipse 19**). Camiseta preta, uma estampa. Preço **R$ 80**, evento **15/10/2026**.
+
+Estética **"relíquia dourada"**: preto quente + **ouro** (lettering/ilustração da estampa) + **vermelho-sangue** (Apocalipse 19) + **pergaminho** (texto). A arte dourada aparece brilhando no escuro, como relíquia iluminada. **Sem 3D** — a landing usa os assets de estampa (com alpha) e fotos.
 
 ## Comandos
 
@@ -12,49 +14,43 @@ Landing page + página de produto (marketplace) da **24 Horas de Adoração Stor
 > `$env:Path = "$env:USERPROFILE\nodejs;$env:Path"`
 
 - `npm run dev` — servidor de desenvolvimento em http://localhost:3000
-- `npm run dev -- -H 0.0.0.0` — dev acessível na **rede local** (abrir no celular): use `http://<IP-do-PC>:3000` (ex.: `http://10.211.100.92:3000`). Celular na mesma Wi-Fi; se não abrir, liberar a porta 3000 no Firewall do Windows. Descobrir o IP: `(Get-NetIPAddress -AddressFamily IPv4).IPAddress`
-- **Parar o servidor**: se rodou no terminal, `Ctrl + C` na janela. Se subiu em background/travou, mate o Node: `Get-Process node | Stop-Process -Force` (cuidado: mata **todos** os processos `node`).
+- `npm run dev -- -H 0.0.0.0` — dev acessível na **rede local** (abrir no celular): use `http://<IP-do-PC>:3000`. Celular na mesma Wi-Fi; se não abrir, liberar a porta 3000 no Firewall do Windows. Descobrir o IP: `(Get-NetIPAddress -AddressFamily IPv4).IPAddress`
+- **Parar o servidor**: `Ctrl + C` na janela. Se subiu em background/travou, `Get-Process node | Stop-Process -Force` (cuidado: mata **todos** os processos `node`).
 - `npm run build` — build de produção (**pare o `npm run dev` antes**: build e dev compartilham `.next` e conflitam → erro `Cannot find module './xxx.js'`; se acontecer, `rm -rf .next` e rebuild)
 - `npm run start` — sobe o build de produção
 
 ## Arquitetura
 
-Next.js 14 (App Router) + TypeScript + Tailwind + React Three Fiber/drei + Framer Motion + Lenis + zustand.
+Next.js 14 (App Router) + TypeScript + Tailwind + Framer Motion + Lenis + zustand. **Sem three.js/R3F** (removido — o site é leve).
 
 ### Rotas
-- `app/page.tsx` — **landing** (client). Monta as seções + `Scene3D` (canvas 3D fixo de fundo) + `SmoothScroll` + `Topbar` + `StickyBuyBar`.
-- `app/produto/page.tsx` — **PDP marketplace**: `ProductViewer3D` (arrastável) + info (versão/tamanho/quantidade) + `CartDrawer`.
-- `app/api/checkout/route.ts` — **pagamento Pix via Mercado Pago** (`POST /v1/payments`, `payment_method_id: "pix"`, REST via `fetch`, sem SDK). Usa `MP_ACCESS_TOKEN`; sem a chave responde `{configured:false}` (front cai no "modo reserva"). Recebe `{items, email}`, devolve `{qrCode, qrCodeBase64, paymentId, status}`. **Só Pix** (sem cartão/boleto), **retirada no evento** (sem frete/endereço).
-- `app/api/checkout/status/route.ts` — `GET ?id=<paymentId>`: consulta o status do pagamento no Mercado Pago (usado pelo polling do `CartDrawer` até `approved`). O token só existe no servidor.
+- `app/page.tsx` — **landing** (client): `SmoothScroll` + `Topbar` + seções + `StickyBuyBar`.
+- `app/produto/page.tsx` — **PDP marketplace**: galeria de fotos (frente/costas) + info (corte/tamanho/quantidade) + `CartDrawer`.
+- `app/api/checkout/route.ts` — **pagamento Pix via Mercado Pago** (`POST /v1/payments`, `payment_method_id: "pix"`, REST via `fetch`, sem SDK). Usa `MP_ACCESS_TOKEN`; sem a chave responde `{configured:false}`. Recebe `{items, email}`, devolve `{qrCode, qrCodeBase64, paymentId, status}`. **Só Pix**, **retirada no evento** (sem frete/endereço).
+- `app/api/checkout/status/route.ts` — `GET ?id=<paymentId>`: status do pagamento (polling do `CartDrawer` até `approved`). Token só no servidor.
+- `app/api/checkout/cancel/route.ts` — cancela um Pix pendente no Mercado Pago (best-effort).
 
 ### Estado (zustand) — `lib/store.ts`
-Fonte única de verdade. Campos: `mood` (`night`/`dawn`), `scrollProgress` (0..1, alimenta a cena 3D), `size`, e o **carrinho** (`cart`, `cartOpen`, `addToCart`, `removeFromCart`, `setQty`, `clearCart`). `versionLabel(mood)`: night→"Preta", dawn→"Branca".
+Campos: `scrollProgress` (0..1, alimenta a barra de progresso do `Topbar`), `size`, e o **carrinho** (`cart`, `cartOpen`, `addToCart`, `removeFromCart`, `setQty`, `clearCart`). Versão única: `"Preta"`.
 
-### Tema (Noite/Amanhecer) — `app/globals.css`
-Tokens CSS em `:root` (Noite = fundo preto) e `:root[data-mood="dawn"]` (Amanhecer = fundo branco). O `Topbar` grava `data-mood` no `<html>`. **Todo componente usa os tokens** (`var(--bg)`, `--ink`, `--accent`, etc.), nunca cores fixas — exceto swatches que ilustram as duas versões.
-
-### 3D
-- `components/three/Scene3D.tsx` — Canvas **fixo** (`z-index:-10`), luzes que abrem conforme o scroll. Carregado com `dynamic(..., { ssr:false })`.
-- `components/three/Shirt.tsx` — carrega `public/tshirt.glb` (placeholder branco), **auto-fit** (centraliza/escala qualquer glb), coreografia por `scrollProgress` (rotação, tilt, zoom, offset à direita no hero e no CTA final) e **tinge o material** por mood (claro na Noite, escuro no Amanhecer).
-- `components/shop/ProductViewer3D.tsx` — visualizador da PDP com `OrbitControls`, tingido por `version` (Preta=escura, Branca=clara).
+### Tema — `app/globals.css`
+**Tema único escuro** (relíquia dourada), tokens CSS em `:root`. **Todo componente usa os tokens** (`var(--bg)`, `--ink`, `--accent`, `--gold`, `--blood`, `--parchment`, etc.), nunca cores fixas. Tokens legados (`--bg`, `--ink`, `--mute`, `--accent`, `--line`…) foram remapeados para a paleta dourada, então CartDrawer/ShopHeader/StickyBuyBar/PDP reskinam automaticamente.
 
 ### Padrões visuais importantes
-- **`.blend-invert`** (globals.css): `mix-blend-mode: difference` nos títulos-palco (Hero, ArtReveal, FinalCta). Letra branca vira preta sobre áreas claras (e vice-versa), pixel a pixel, inclusive sobre a camiseta 3D. **Pré-requisito**: nada pode isolar o stacking context entre o título e o canvas — por isso as seções-palco **não** têm `z-index` e o `Reveal` **não** usa `filter`. **Além disso, o `<h1/h2>` com `.blend-invert` NÃO pode ficar dentro de `<Reveal>`** (o `motion.div` dele cria stacking context via `opacity`/`transform`/`will-change` e mata o blend — some no desktop e vira branco sólido no mobile). Anime o título pelo padrão do Hero: `.blend-invert` no `<h*>` sem wrapper isolante + `motion.span` nas máscaras internas (`.block.overflow-hidden`). As máscaras usam `py-[0.14em] -my-[0.14em]` para não cortar acentos/cedilha (À, Ã, Ç). **Exceção — `Countdown` (timer) NÃO usa `.blend-invert`**: por re-renderizar a cada segundo, o GPU do celular promove o elemento a uma camada própria e **derruba o `mix-blend-mode`** (fica branco sólido e some). Para o timer sobre a camiseta, use a prop `blend` do `Countdown`, que aplica um **halo `text-shadow`** na cor do fundo (`HALO` em `Countdown.tsx`) — legível sobre claro e escuro, estável porque não depende de composição de camada.
-- **Fonts** (`app/layout.tsx`, via `next/font`): display = **Oswald** (condensada Nike, com acentos — Bebas Neue/Anton falham em À/Ó); corpo = **Inter**; mono = JetBrains Mono. Classe `.display` para títulos caixa-alta.
-- Seções da landing são numeradas no eyebrow (`01 — …`). Ao adicionar/remover seção, **renumerar** para manter a sequência.
+- **Tokens (Tailwind)**: `bg/surface/line/ink/mute/accent` + novos `void/parchment/gold/gold-lite/gold-deep/blood/blood-lite` (em `tailwind.config.ts`, apontando para as CSS vars).
+- **Fonts** (`app/layout.tsx`, via `next/font`): display = **Cinzel** (serifa romana/inscricional, monumental — cobre acentos PT-BR À/Ã/Ç/Ó); corpo = **Inter**; mono = **JetBrains Mono** (dados: countdown, cm, preço, eyebrows). Classe `.display` = Cinzel caixa-alta.
+- **Utilities-assinatura** (globals.css): `.sacred` (tag Cinzel vermelho-sangue letterspaced — eco do "APOCALIPSE 19"), `.seam` (costura/divisor sagrado dourado), `.gold-text` (texto em folha de ouro), `.relic` (halo dourado radial atrás da arte), `.card` (superfície escura com hairline quente), `.btn-magnetic` (botão dourado com glow).
+- Rótulos de seção usam `.sacred` (não são numerados — não é uma sequência).
 
 ### Seções da landing — `components/sections/`
-Hero · Manifesto · ArtReveal · Features · VersionToggle · Gallery · SizeGuide · Faq · FinalCta · Footer. Seções "palco" (Hero, ArtReveal, FinalCta) têm fundo transparente (mostram o 3D); as demais têm `background: var(--bg)` opaco.
+Hero · Manifesto · ArtReveal · Features · Gallery · SizeGuide · Faq · FinalCta · Footer. Todas com fundo transparente sobre o `--void` do body (que tem um halo quente radial fixo no topo). O **Hero** mostra o lettering VOLTAREI dourado (`front.webp`) brilhando; a **ArtReveal** mostra a ilustração do Rei (`back.webp`) como relíquia.
 
 ## Estampa nos assets
 
-- **Designs**: `public/designs/front.webp` (lettering "VOLTAREI", peito) e `back.webp` (ilustração do Rei, costas) — derivados otimizados (2048px, com alpha) dos PNGs originais em `public/designs/`. **Não** referencie os PNGs pesados (o das costas tem 23MB); use os `.webp`.
-- **Decals no 3D** (`lib/shirtDecals.ts`): `addShirtDecals()` acha a malha do corpo (maior bbox), projeta 2 decals via `THREE.DecalGeometry` (frente +Z, costas −Z, costas com textura espelhada). Chamado em `Shirt.tsx` (fundo da landing) **com o wrapper em escala 1** (antes do auto-fit), pra o decal nascer em espaço-mundo e girar junto. Profundidade da caixa é **rasa** de propósito (`frontDepth`/`backDepth`) pra não atravessar a camiseta e vazar pro lado oposto. **Limitação do placeholder**: no `tshirt.glb` arredondado a projeção plana das costas fecha como um grafismo central (não full-bleed) — aprofundar pra cobrir toda a largura faz vazar pra frente/ombros. Resolve quando entrarem os GLBs reais com a estampa já na textura. (`components/shop/ProductViewer3D.tsx` tem a mesma lógica de decal, mas hoje está **sem uso** — a PDP virou galeria de fotos.)
-- **Fotos mockup**: `public/imagens/mockup-frente.webp` e `mockup-costas.webp` (derivados dos JPGs). Usadas na **Galeria** (2 fotos + 2 close-ups por crop/zoom), na **ArtReveal** (foto das costas ao lado do título) e na **PDP** (estágio + thumbnails só `frente/costas` — **sem visualizador 3D**, principal inicia na frente). São **version-agnostic** (só existe foto da Preta).
+- **Designs (com alpha, brilham no escuro)**: `public/designs/front.webp` (lettering "VOLTAREI" dourado + "APOCALIPSE 19" vermelho) e `back.webp` (ilustração completa do Rei) — derivados otimizados (com alpha) dos PNGs originais em `public/designs/`. **Não** referencie os PNGs pesados (o das costas tem 23MB); use os `.webp`. Usados direto no Hero e na ArtReveal, dentro de um wrapper `.relic`.
+- **Fotos mockup**: `public/imagens/mockup-frente.webp` e `mockup-costas.webp` (camiseta preta em fundo cinza de estúdio). Usadas na **Galeria** (2 fotos + 2 close-ups por crop/zoom) e na **PDP** (estágio + thumbnails frente/costas).
 
 ## Pendências
-- Trocar `public/tshirt.glb` pelos **2 modelos reais** (com a estampa) — hoje é 1 branco tingido + decal para as duas versões.
-- **Falta foto da versão Branca** — as fotos mockup atuais são só da Preta (usadas de forma version-agnostic).
 - **Checkout Pix está pronto** (Mercado Pago), mas depende do usuário criar `.env.local` com `MP_ACCESS_TOKEN` e cadastrar uma chave Pix na conta. Validar o fluxo ponta a ponta com token de **TESTE** antes de ir a produção.
 - Confirmação do Pix hoje é por **polling** no `CartDrawer` (funciona enquanto o navegador está aberto). Versão robusta = **webhook** (`/api/webhook/mercadopago`) — pendente.
-- Sem **persistência de pedidos** (banco): reconciliação de quem comprou/qual tamanho é feita pelo painel do Mercado Pago (descrição do pagamento traz versão + tamanho).
+- Sem **persistência de pedidos** (banco): reconciliação de quem comprou/qual tamanho é feita pelo painel do Mercado Pago (descrição do pagamento traz corte + tamanho).

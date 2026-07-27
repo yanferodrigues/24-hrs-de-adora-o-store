@@ -1,90 +1,64 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { Reveal } from "@/components/Reveal";
 
-const line = {
-  hidden: { y: "110%" },
-  show: (i: number) => ({
-    y: "0%",
-    transition: { duration: 0.9, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] },
-  }),
-};
-
 const points = [
-  { n: "A", label: "O Cavaleiro", desc: "Fiel e Verdadeiro, montado no cavalo (Ap 19)." },
-  { n: "B", label: "A multidão", desc: "Todo joelho se dobra em adoração." },
-  { n: "C", label: "Os raios", desc: "A glória rompendo a escuridão." },
+  { label: "O Cavaleiro", desc: "Fiel e Verdadeiro, montado no cavalo branco (Ap 19)." },
+  { label: "A multidão", desc: "Reis e povos entregam suas coroas em adoração." },
+  { label: "A glória", desc: "A luz da cidade santa rompendo a escuridão." },
 ];
 
 export default function ArtReveal() {
   return (
-    <section className="relative min-h-[100svh] py-24">
-      {/* palco: a camiseta 3D aparece atrás (canvas fixo) */}
-      <div className="wrap flex h-full flex-col justify-between">
-        {/* grid comum (não isola stacking context) — título à esquerda, foto à direita */}
-        <div className="grid items-center gap-10 lg:grid-cols-2">
-          <div className="max-w-md">
-            <Reveal>
-              <p className="eyebrow mb-4">02 — A Arte</p>
-            </Reveal>
-            {/* blend-invert fora de qualquer wrapper que isole o stacking context
-                (Reveal cria um) — animação nas máscaras internas, como no Hero. */}
-            <h2 className="display blend-invert" style={{ fontSize: "clamp(2.4rem,7vw,5rem)" }}>
-              <span className="block overflow-hidden py-[0.14em] -my-[0.14em]">
-                <motion.span
-                  custom={0}
-                  variants={line}
-                  initial="hidden"
-                  animate="show"
-                  className="block"
-                >
-                  Uma cena.
-                </motion.span>
-              </span>
-              <span className="block overflow-hidden py-[0.14em] -my-[0.14em]">
-                <motion.span
-                  custom={1}
-                  variants={line}
-                  initial="hidden"
-                  animate="show"
-                  className="block"
-                >
-                  Impressa para adorar.
-                </motion.span>
-              </span>
-            </h2>
+    <section className="relative overflow-hidden py-28">
+      <div className="wrap grid items-center gap-14 lg:grid-cols-[1fr_0.9fr]">
+        {/* a arte das costas, como relíquia dourada iluminada */}
+        <Reveal className="order-1 justify-self-center lg:order-none">
+          <div className="relic w-[min(80vw,460px)]">
+            <Image
+              src="/designs/back.webp"
+              alt="O Rei no cavalo branco com a multidão em adoração — Apocalipse 19"
+              width={1444}
+              height={2048}
+              sizes="(max-width: 1024px) 80vw, 460px"
+              className="h-auto w-full"
+            />
           </div>
+        </Reveal>
 
-          {/* foto real das costas — irmã do título, pode usar Reveal à vontade */}
-          <Reveal delay={0.15} className="justify-self-center lg:justify-self-end">
-            <figure className="relative w-[min(78vw,420px)] overflow-hidden rounded-2xl border border-line/70 shadow-2xl">
-              <Image
-                src="/imagens/mockup-costas.webp"
-                alt="Costas da camiseta — o Rei montado no cavalo (Apocalipse 19)"
-                width={990}
-                height={1400}
-                sizes="(max-width: 1024px) 78vw, 420px"
-                className="h-auto w-full"
-              />
-              <figcaption className="absolute bottom-3 left-3 font-mono text-[9px] uppercase tracking-[0.2em] text-white/80">
-                Costas · impressão premium
-              </figcaption>
-            </figure>
+        <div className="order-2 lg:order-none">
+          <Reveal>
+            <p className="sacred mb-5">A Arte</p>
+            <h2
+              className="display text-parchment"
+              style={{ fontSize: "clamp(2.1rem,5.5vw,4rem)", lineHeight: 1.02 }}
+            >
+              A cena da <span className="gold-text">volta</span> do Rei
+            </h2>
           </Reveal>
-        </div>
 
-        <div className="mt-auto grid gap-4 pt-16 sm:grid-cols-3">
-          {points.map((p, i) => (
-            <Reveal key={p.n} delay={i * 0.1}>
-              <div className="rounded-xl border border-line/70 bg-[color-mix(in_srgb,var(--surface)_70%,transparent)] p-4 backdrop-blur-sm">
-                <span className="display text-2xl text-ink">{p.n}</span>
-                <div className="mt-1 text-sm font-semibold text-ink">{p.label}</div>
-                <div className="text-xs text-mute">{p.desc}</div>
-              </div>
-            </Reveal>
-          ))}
+          <Reveal delay={0.1}>
+            <p className="mt-6 max-w-md text-[15px] leading-relaxed text-mute">
+              Nas costas, a ilustração completa de Apocalipse 19: o Rei dos reis
+              e Senhor dos senhores, a espada em chamas, os exércitos e todo
+              joelho que se dobra. Impressão premium, cores firmes que não
+              craquelam.
+            </p>
+          </Reveal>
+
+          <div className="mt-10 flex flex-col divide-y divide-line border-y border-line">
+            {points.map((p, i) => (
+              <Reveal key={p.label} delay={0.15 + i * 0.08}>
+                <div className="grid grid-cols-[10rem_1fr] items-baseline gap-4 py-4 max-sm:grid-cols-1 max-sm:gap-1">
+                  <div className="text-sm font-semibold text-parchment">
+                    {p.label}
+                  </div>
+                  <div className="text-sm text-mute">{p.desc}</div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </div>
     </section>

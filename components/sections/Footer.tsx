@@ -26,14 +26,11 @@ export default function Footer() {
     : "#";
 
   return (
-    <footer
-      className="relative z-10 border-t border-line py-14"
-      style={{ background: "var(--bg)" }}
-    >
+    <footer className="relative border-t border-line py-14">
       <div className="wrap flex flex-col gap-10">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <div className="display text-4xl text-ink">
-            Da noite à glória
+          <div className="display text-3xl sm:text-4xl">
+            <span className="gold-text">Da noite à glória</span>
           </div>
           <div className="flex gap-4 text-mute">
             <a
@@ -59,7 +56,7 @@ export default function Footer() {
 
         <div className="flex flex-col gap-4 border-t border-line-soft pt-6 sm:flex-row sm:items-center sm:justify-between">
           <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-mute-2">
-            <ShieldCheck size={14} /> Pagamento seguro · Pix e cartão
+            <ShieldCheck size={14} /> Pagamento seguro · Pix
           </span>
           <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-mute-2">
             © {new Date().getFullYear()} 24 Horas de Adoração · Store — Feito para adorar.

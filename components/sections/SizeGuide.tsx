@@ -9,18 +9,18 @@ export default function SizeGuide() {
   const setSize = useStore((s) => s.setSize);
 
   return (
-    <section
-      className="relative z-10 py-28"
-      style={{ background: "var(--bg)" }}
-    >
+    <section className="relative py-28">
       <div className="wrap grid gap-12 lg:grid-cols-2">
         <div>
           <Reveal>
-            <p className="eyebrow mb-3">05 — Tamanhos</p>
-            <h2 className="display text-ink" style={{ fontSize: "clamp(2rem,6vw,4rem)" }}>
+            <p className="sacred mb-4">Os Tamanhos</p>
+            <h2
+              className="display text-parchment"
+              style={{ fontSize: "clamp(2rem,5.5vw,3.6rem)", lineHeight: 1.04 }}
+            >
               Escolha sem erro
             </h2>
-            <p className="mt-4 max-w-md text-sm text-mute">
+            <p className="mt-5 max-w-md text-sm leading-relaxed text-mute">
               Modelagem oversized: se quiser um caimento mais justo, considere um
               tamanho abaixo. Medidas em centímetros, peça plana.
             </p>
@@ -28,7 +28,7 @@ export default function SizeGuide() {
 
           <Reveal delay={0.1}>
             <div className="mt-8">
-              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-mute-2">
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-mute-2">
                 Seu tamanho
               </span>
               <div className="mt-3 flex flex-wrap gap-2">
@@ -39,9 +39,9 @@ export default function SizeGuide() {
                     aria-pressed={size === s}
                     className="h-11 w-11 rounded-full border font-mono text-xs transition-colors"
                     style={{
-                      background: size === s ? "var(--accent)" : "transparent",
-                      color: size === s ? "var(--accent-on)" : "var(--ink)",
-                      borderColor: size === s ? "var(--accent)" : "var(--line)",
+                      background: size === s ? "var(--gold)" : "transparent",
+                      color: size === s ? "#0b0907" : "var(--parchment)",
+                      borderColor: size === s ? "var(--gold)" : "var(--line)",
                     }}
                   >
                     {s}
@@ -72,7 +72,7 @@ export default function SizeGuide() {
                         size === r.size ? "var(--surface-2)" : "transparent",
                     }}
                   >
-                    <td className="p-4 font-semibold text-ink">{r.size}</td>
+                    <td className="p-4 font-semibold text-parchment">{r.size}</td>
                     <td className="p-4 tabular-nums text-mute">{r.chest}</td>
                     <td className="p-4 tabular-nums text-mute">{r.length}</td>
                   </tr>

@@ -6,7 +6,7 @@ import { Reveal } from "@/components/Reveal";
 const FRENTE = "/imagens/mockup-frente.webp";
 const COSTAS = "/imagens/mockup-costas.webp";
 
-// grid editorial com as fotos reais (frente + costas) e dois close-ups da estampa
+// grade editorial com as fotos reais (frente + costas) e dois close-ups da estampa
 const TILES = [
   {
     src: COSTAS,
@@ -20,7 +20,7 @@ const TILES = [
     src: COSTAS,
     span: "",
     ratio: "aspect-square",
-    cap: "Close · estampa",
+    cap: "Close · a cena",
     fit: "object-cover",
     zoom: "scale-[1.9] object-[50%_38%] group-hover:scale-[2.02]",
   },
@@ -44,16 +44,19 @@ const TILES = [
 
 export default function Gallery() {
   return (
-    <section className="relative z-10 py-28" style={{ background: "var(--bg)" }}>
+    <section className="relative py-28">
       <div className="wrap">
         <Reveal>
-          <p className="eyebrow mb-3">04 — Galeria</p>
-          <h2 className="display text-ink" style={{ fontSize: "clamp(2rem,6vw,4rem)" }}>
-            Vestida na vida real
+          <p className="sacred mb-4">A Peça</p>
+          <h2
+            className="display text-parchment"
+            style={{ fontSize: "clamp(2rem,5.5vw,3.6rem)", lineHeight: 1.04 }}
+          >
+            Ouro sobre o preto
           </h2>
         </Reveal>
 
-        <div className="mt-12 grid auto-rows-[minmax(0,1fr)] grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="mt-14 grid auto-rows-[minmax(0,1fr)] grid-cols-2 gap-3 sm:grid-cols-4">
           {TILES.map((t, i) => (
             <Reveal key={i} delay={i * 0.05} className={t.span}>
               <figure
@@ -66,8 +69,8 @@ export default function Gallery() {
                   sizes="(max-width: 640px) 50vw, 25vw"
                   className={`${t.fit} ${t.zoom} transition-transform duration-700`}
                 />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                <figcaption className="absolute bottom-3 left-3 font-mono text-[9px] uppercase tracking-[0.2em] text-white/80">
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <figcaption className="absolute bottom-3 left-3 font-mono text-[9px] uppercase tracking-[0.2em] text-gold-lite/90">
                   {t.cap}
                 </figcaption>
               </figure>
