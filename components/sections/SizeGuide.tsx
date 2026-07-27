@@ -40,7 +40,7 @@ export default function SizeGuide() {
                     className="h-11 w-11 rounded-full border font-mono text-xs transition-colors"
                     style={{
                       background: size === s ? "var(--gold)" : "transparent",
-                      color: size === s ? "#0b0907" : "var(--parchment)",
+                      color: size === s ? "var(--accent-on)" : "var(--parchment)",
                       borderColor: size === s ? "var(--gold)" : "var(--line)",
                     }}
                   >

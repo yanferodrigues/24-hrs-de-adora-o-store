@@ -3,33 +3,33 @@
 @tailwind utilities;
 
 :root {
-  /* ---- Relíquia dourada: preto quente + ouro + vermelho-sangue + pergaminho ---- */
-  --void: #0b0907; /* fundo — preto quente */
-  --void-2: #141009; /* superfície elevada (cards) */
-  --void-3: #1d160d; /* hover / inputs */
+  /* ---- Relíquia dourada em claro: branco gelo + ouro + vermelho-sangue ---- */
+  --void: #eff1ef; /* fundo — branco gelo */
+  --void-2: #ffffff; /* superfície elevada (cards) */
+  --void-3: #e4e7e4; /* hover / inputs */
 
-  --gold: #c9a24b; /* acento primário — ouro da estampa */
-  --gold-lite: #e7ce8e; /* brilho / hover */
-  --gold-deep: #7c5e28;
-  --blood: #9b2d25; /* vermelho-sangue — Apocalipse 19 */
-  --blood-lite: #c0483b;
-  --parchment: #ece2cd; /* texto principal — branco quente */
-  --ash: #9a8f7c; /* texto secundário */
-  --ash-2: #6a6152; /* texto terciário / faint */
+  --gold: #9a7328; /* acento primário — ouro fechado, legível no claro */
+  --gold-lite: #b98f3b; /* hover */
+  --gold-deep: #6e4f17; /* hairlines e detalhes */
+  --blood: #93261e; /* vermelho-sangue — Apocalipse 19 */
+  --blood-lite: #a8322a;
+  --parchment: #14110c; /* texto principal — preto quente */
+  --ash: #5a544b; /* texto secundário */
+  --ash-2: #7c7568; /* texto terciário / faint */
 
   /* mapeamento p/ tokens legados (herdados por muitos componentes) */
   --bg: var(--void);
   --surface: var(--void-2);
   --surface-2: var(--void-3);
-  --line: #2b2114; /* hairline quente */
-  --line-soft: #1f1810;
+  --line: #d9d6cd; /* hairline quente */
+  --line-soft: #e6e3db;
   --ink: var(--parchment);
   --mute: var(--ash);
   --mute-2: var(--ash-2);
   --accent: var(--gold);
-  --accent-on: #0b0907; /* texto escuro sobre botão dourado */
+  --accent-on: #ffffff; /* texto claro sobre botão dourado */
 
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 * {
@@ -54,7 +54,7 @@ body {
 
 ::selection {
   background: var(--gold);
-  color: #0b0907;
+  color: #ffffff;
 }
 
 /* ---- camadas utilitárias ---- */
@@ -182,14 +182,14 @@ body {
   display: none;
 }
 
-/* grão de filme sutil (dark) */
+/* grão de filme sutil (claro — multiply, senão some no branco) */
 .grain {
   position: fixed;
   inset: 0;
   z-index: 60;
   pointer-events: none;
-  opacity: 0.05;
-  mix-blend-mode: soft-light;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
