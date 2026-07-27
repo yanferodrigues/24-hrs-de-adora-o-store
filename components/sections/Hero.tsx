@@ -20,7 +20,7 @@ export default function Hero() {
         transition={{ duration: 0.9, ease }}
         className="sacred mb-10"
       >
-        Congresso de Louvor · Apocalipse 19
+        24 Horas de Adoração
       </motion.p>
 
       {/* relíquia: o lettering dourado brilhando no escuro */}
