@@ -4,6 +4,7 @@ import SmoothScroll from "@/components/SmoothScroll";
 import Topbar from "@/components/Topbar";
 import StickyBuyBar from "@/components/StickyBuyBar";
 import Hero from "@/components/sections/Hero";
+import PeopleWearing from "@/components/sections/PeopleWearing";
 import Manifesto from "@/components/sections/Manifesto";
 import ArtReveal from "@/components/sections/ArtReveal";
 import Features from "@/components/sections/Features";
@@ -20,6 +21,7 @@ export default function Page() {
 
       <main className="relative">
         <Hero />
+        <PeopleWearing />
         <Manifesto />
         <ArtReveal />
         <Features />

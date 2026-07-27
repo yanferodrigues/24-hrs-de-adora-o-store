@@ -173,6 +173,15 @@ body {
   }
 }
 
+/* trilho horizontal sem barra de rolagem visível (galerias no celular) */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* grão de filme sutil (dark) */
 .grain {
   position: fixed;

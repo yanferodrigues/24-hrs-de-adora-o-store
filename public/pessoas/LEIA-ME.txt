@@ -1,0 +1,13 @@
+Fotos de pessoas vestindo a camiseta.
+
+Coloque os arquivos aqui com estes nomes:
+  01.webp  02.webp  03.webp  04.webp
+
+Formato: retrato ~3:4 (ex. 1200x1600), webp, ate ~400kb cada.
+
+Depois abra components/sections/PeopleWearing.tsx e troque, em cada slot,
+  src: null
+por
+  src: "/pessoas/01.webp"   (e assim por diante)
+
+Enquanto o src for null, o espaco aparece como moldura vazia na landing.
