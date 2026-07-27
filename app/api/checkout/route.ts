@@ -11,6 +11,7 @@ import { randomUUID } from "crypto";
 
 interface CartItem {
   version: string;
+  fit?: string;
   size: string;
   qty: number;
   price: number;
@@ -44,7 +45,7 @@ export async function POST(req: Request) {
 
   const total = items.reduce((n, i) => n + i.qty * i.price, 0);
   const description = items
-    .map((i) => `Camiseta ${i.version} (${i.size}) x${i.qty}`)
+    .map((i) => `Camiseta ${i.version} ${i.fit ?? "Regular"} (${i.size}) x${i.qty}`)
     .join(" · ");
 
   // QR expira em 30 minutos.

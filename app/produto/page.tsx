@@ -1,25 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import dynamic from "next/dynamic";
-import { Minus, Plus, Truck, RefreshCw, ShieldCheck, type LucideIcon } from "lucide-react";
+import Image from "next/image";
+import { Minus, Plus, Truck, ShieldCheck, type LucideIcon } from "lucide-react";
 import ShopHeader from "@/components/shop/ShopHeader";
 import CartDrawer from "@/components/shop/CartDrawer";
-import { PRODUCT } from "@/lib/data";
-import { useStore } from "@/lib/store";
+import { PRODUCT, FITS } from "@/lib/data";
+import { useStore, type Fit } from "@/lib/store";
 
-const ProductViewer3D = dynamic(
-  () => import("@/components/shop/ProductViewer3D"),
-  { ssr: false }
-);
-
-const DETAILS = ["Costas", "Detalhe · gola", "Detalhe · estampa"];
+type View = "frente" | "costas";
+const VIEWS: { id: View; label: string; src: string }[] = [
+  { id: "frente", label: "Frente", src: "/imagens/mockup-frente.webp" },
+  { id: "costas", label: "Costas", src: "/imagens/mockup-costas.webp" },
+];
 
 export default function ProdutoPage() {
   const addToCart = useStore((s) => s.addToCart);
 
   const [size, setSize] = useState<string>("M");
   const [qty, setQty] = useState(1);
+  const [view, setView] = useState<View>("frente");
+  const [fit, setFit] = useState<Fit>("Regular");
+
+  const unitPrice = FITS.find((f) => f.id === fit)?.price ?? PRODUCT.price;
 
   return (
     <div className="min-h-screen" style={{ background: "var(--bg)" }}>
@@ -35,39 +38,35 @@ export default function ProdutoPage() {
                 "radial-gradient(120% 120% at 50% 35%, var(--surface), var(--surface-2))",
             }}
           >
-            <ProductViewer3D />
-            <span className="pointer-events-none absolute bottom-4 left-4 font-mono text-[10px] uppercase tracking-[0.2em] text-mute-2">
-              Arraste para girar · 360°
-            </span>
+            <Image
+              src={view === "frente" ? "/imagens/mockup-frente.webp" : "/imagens/mockup-costas.webp"}
+              alt={`Camiseta oficial — ${view}`}
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover"
+            />
           </div>
 
-          <div className="grid grid-cols-4 gap-3">
-            {/* miniatura ativa = viewer */}
-            <div
-              className="aspect-square rounded-xl border-2"
-              style={{
-                borderColor: "var(--ink)",
-                background:
-                  "radial-gradient(120% 120% at 50% 35%, var(--surface), var(--surface-2))",
-              }}
-            />
-            {DETAILS.map((d) => (
-              <div
-                key={d}
-                className="relative aspect-square overflow-hidden rounded-xl border border-line"
-                style={{ background: "var(--surface)" }}
+          <div className="grid grid-cols-2 gap-3">
+            {VIEWS.map((v) => (
+              <button
+                key={v.id}
+                onClick={() => setView(v.id)}
+                aria-pressed={view === v.id}
+                aria-label={v.label}
+                className="relative aspect-square overflow-hidden rounded-xl border-2 transition-colors"
+                style={{
+                  borderColor: view === v.id ? "var(--ink)" : "var(--line)",
+                  background:
+                    "radial-gradient(120% 120% at 50% 35%, var(--surface), var(--surface-2))",
+                }}
               >
-                <div
-                  className="absolute inset-0 opacity-[0.06]"
-                  style={{
-                    backgroundImage:
-                      "repeating-linear-gradient(45deg, var(--ink) 0 1px, transparent 1px 12px)",
-                  }}
-                />
-                <span className="absolute bottom-1.5 left-1.5 font-mono text-[8px] uppercase tracking-wider text-mute-2">
-                  {d}
+                <Image src={v.src} alt={v.label} fill sizes="120px" className="object-cover" />
+                <span className="absolute bottom-1.5 left-1.5 font-mono text-[8px] uppercase tracking-wider text-white/80">
+                  {v.label}
                 </span>
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -84,9 +83,12 @@ export default function ProdutoPage() {
           </h1>
 
           <div className="mt-4 flex items-baseline gap-3">
-            <span className="display text-4xl text-ink">{PRODUCT.priceLabel}</span>
-            <span className="font-mono text-[11px] uppercase tracking-wider text-mute-2">
-            </span>
+            <span className="display text-4xl text-ink">R$ {unitPrice}</span>
+            {fit === "Oversized" && (
+              <span className="font-mono text-[11px] uppercase tracking-wider text-mute-2">
+                Corte oversized
+              </span>
+            )}
           </div>
 
           <p className="mt-6 max-w-prose text-[15px] leading-relaxed text-mute">
@@ -96,6 +98,31 @@ export default function ProdutoPage() {
             alta. Corte oversized streetwear, acabamento reforçado e estampa de
             alta durabilidade.
           </p>
+
+          {/* Corte */}
+          <div className="mt-6">
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-mute-2">
+              Corte · <span className="text-ink">{fit}</span>
+            </span>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {FITS.map((f) => (
+                <button
+                  key={f.id}
+                  onClick={() => setFit(f.id)}
+                  aria-pressed={fit === f.id}
+                  className="flex h-11 items-center gap-2 rounded-full border px-4 font-mono text-xs transition-colors"
+                  style={{
+                    background: fit === f.id ? "var(--accent)" : "transparent",
+                    color: fit === f.id ? "var(--accent-on)" : "var(--ink)",
+                    borderColor: fit === f.id ? "var(--accent)" : "var(--line)",
+                  }}
+                >
+                  {f.label}
+                  <span className="opacity-60">R$ {f.price}</span>
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* Tamanho */}
           <div className="mt-6">
@@ -145,11 +172,11 @@ export default function ProdutoPage() {
 
             <button
               onClick={() =>
-                addToCart({ version: "Preta", size, qty, price: PRODUCT.price })
+                addToCart({ version: "Preta", fit, size, qty, price: unitPrice })
               }
               className="btn-magnetic flex-1"
             >
-              Adicionar ao carrinho · R$ {qty * PRODUCT.price}
+              Adicionar ao carrinho · R$ {qty * unitPrice}
             </button>
           </div>
 

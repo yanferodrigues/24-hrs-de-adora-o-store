@@ -290,7 +290,7 @@ export default function CartDrawer() {
                               Camiseta {item.version}
                             </div>
                             <div className="font-mono text-[10px] uppercase tracking-wider text-mute-2">
-                              Tam. {item.size}
+                              {item.fit} · Tam. {item.size}
                             </div>
                           </div>
                           <button

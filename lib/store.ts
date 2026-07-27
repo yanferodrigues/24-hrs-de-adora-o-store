@@ -3,10 +3,12 @@
 import { create } from "zustand";
 
 export type Version = "Preta";
+export type Fit = "Regular" | "Oversized";
 
 export interface CartItem {
-  id: string; // `${version}-${size}`
+  id: string; // `${version}-${fit}-${size}`
   version: Version;
+  fit: Fit;
   size: string;
   qty: number;
   price: number;
@@ -40,7 +42,7 @@ export const useStore = create<StoreState>((set) => ({
   setCartOpen: (cartOpen) => set({ cartOpen }),
   addToCart: (item) =>
     set((s) => {
-      const id = `${item.version}-${item.size}`;
+      const id = `${item.version}-${item.fit}-${item.size}`;
       const existing = s.cart.find((c) => c.id === id);
       const cart = existing
         ? s.cart.map((c) =>

@@ -46,9 +46,15 @@ Tokens CSS em `:root` (Noite = fundo preto) e `:root[data-mood="dawn"]` (Amanhec
 ### Seções da landing — `components/sections/`
 Hero · Manifesto · ArtReveal · Features · VersionToggle · Gallery · SizeGuide · Faq · FinalCta · Footer. Seções "palco" (Hero, ArtReveal, FinalCta) têm fundo transparente (mostram o 3D); as demais têm `background: var(--bg)` opaco.
 
+## Estampa nos assets
+
+- **Designs**: `public/designs/front.webp` (lettering "VOLTAREI", peito) e `back.webp` (ilustração do Rei, costas) — derivados otimizados (2048px, com alpha) dos PNGs originais em `public/designs/`. **Não** referencie os PNGs pesados (o das costas tem 23MB); use os `.webp`.
+- **Decals no 3D** (`lib/shirtDecals.ts`): `addShirtDecals()` acha a malha do corpo (maior bbox), projeta 2 decals via `THREE.DecalGeometry` (frente +Z, costas −Z, costas com textura espelhada). Chamado em `Shirt.tsx` (fundo da landing) **com o wrapper em escala 1** (antes do auto-fit), pra o decal nascer em espaço-mundo e girar junto. Profundidade da caixa é **rasa** de propósito (`frontDepth`/`backDepth`) pra não atravessar a camiseta e vazar pro lado oposto. **Limitação do placeholder**: no `tshirt.glb` arredondado a projeção plana das costas fecha como um grafismo central (não full-bleed) — aprofundar pra cobrir toda a largura faz vazar pra frente/ombros. Resolve quando entrarem os GLBs reais com a estampa já na textura. (`components/shop/ProductViewer3D.tsx` tem a mesma lógica de decal, mas hoje está **sem uso** — a PDP virou galeria de fotos.)
+- **Fotos mockup**: `public/imagens/mockup-frente.webp` e `mockup-costas.webp` (derivados dos JPGs). Usadas na **Galeria** (2 fotos + 2 close-ups por crop/zoom), na **ArtReveal** (foto das costas ao lado do título) e na **PDP** (estágio + thumbnails só `frente/costas` — **sem visualizador 3D**, principal inicia na frente). São **version-agnostic** (só existe foto da Preta).
+
 ## Pendências
-- Trocar `public/tshirt.glb` pelos **2 modelos reais** (com a estampa) — hoje é 1 branco tingido para as duas versões.
-- Galeria e miniaturas da PDP usam **placeholders** — trocar por fotos on-body (WebP/AVIF).
+- Trocar `public/tshirt.glb` pelos **2 modelos reais** (com a estampa) — hoje é 1 branco tingido + decal para as duas versões.
+- **Falta foto da versão Branca** — as fotos mockup atuais são só da Preta (usadas de forma version-agnostic).
 - **Checkout Pix está pronto** (Mercado Pago), mas depende do usuário criar `.env.local` com `MP_ACCESS_TOKEN` e cadastrar uma chave Pix na conta. Validar o fluxo ponta a ponta com token de **TESTE** antes de ir a produção.
 - Confirmação do Pix hoje é por **polling** no `CartDrawer` (funciona enquanto o navegador está aberto). Versão robusta = **webhook** (`/api/webhook/mercadopago`) — pendente.
 - Sem **persistência de pedidos** (banco): reconciliação de quem comprou/qual tamanho é feita pelo painel do Mercado Pago (descrição do pagamento traz versão + tamanho).

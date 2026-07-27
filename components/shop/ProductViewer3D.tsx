@@ -2,15 +2,19 @@
 
 import { Suspense, useMemo } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, useGLTF } from "@react-three/drei";
+import { OrbitControls, useGLTF, useTexture } from "@react-three/drei";
 import * as THREE from "three";
+import { addShirtDecals } from "@/lib/shirtDecals";
 
 const MODEL = "/tshirt.glb";
+const FRONT_ART = "/designs/front.webp";
+const BACK_ART = "/designs/back.webp";
 const TARGET_HEIGHT = 2.6;
 const SHIRT_COLOR = new THREE.Color("#17171a"); // camiseta preta
 
 function ShirtMesh() {
   const { scene } = useGLTF(MODEL);
+  const [frontTex, backTex] = useTexture([FRONT_ART, BACK_ART]);
 
   const model = useMemo(() => {
     const root = scene.clone(true);
@@ -23,7 +27,6 @@ function ShirtMesh() {
     root.position.sub(center);
     const wrapper = new THREE.Group();
     wrapper.add(root);
-    wrapper.scale.setScalar(scale);
     root.traverse((obj) => {
       const mesh = obj as THREE.Mesh;
       if (mesh.isMesh) {
@@ -39,8 +42,10 @@ function ShirtMesh() {
           : apply(mesh.material);
       }
     });
+    addShirtDecals(wrapper, root, frontTex, backTex);
+    wrapper.scale.setScalar(scale);
     return wrapper;
-  }, [scene]);
+  }, [scene, frontTex, backTex]);
 
   return <primitive object={model} />;
 }

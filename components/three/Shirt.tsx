@@ -2,11 +2,13 @@
 
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useGLTF } from "@react-three/drei";
+import { useGLTF, useTexture } from "@react-three/drei";
 import * as THREE from "three";
-import { useStore } from "@/lib/store";
+import { addShirtDecals } from "@/lib/shirtDecals";
 
 const MODEL = "/tshirt.glb";
+const FRONT_ART = "/designs/front.webp";
+const BACK_ART = "/designs/back.webp";
 const TARGET_HEIGHT = 2.6; // altura desejada em unidades de cena
 
 // camiseta preta (modelo é branco → tingimos de escuro)
@@ -18,9 +20,10 @@ function damp(current: number, target: number, lambda: number, dt: number) {
 
 export function Shirt() {
   const { scene } = useGLTF(MODEL);
+  const [frontTex, backTex] = useTexture([FRONT_ART, BACK_ART]);
   const outer = useRef<THREE.Group>(null);
 
-  // clona a cena, normaliza escala/centro e tinge de preto
+  // clona a cena, normaliza escala/centro, tinge de preto e projeta a estampa
   const model = useMemo(() => {
     const root = scene.clone(true);
     const box = new THREE.Box3().setFromObject(root);
@@ -34,7 +37,6 @@ export function Shirt() {
     root.position.sub(center); // centraliza na origem
     const wrapper = new THREE.Group();
     wrapper.add(root);
-    wrapper.scale.setScalar(scale);
 
     root.traverse((obj) => {
       const mesh = obj as THREE.Mesh;
@@ -54,36 +56,27 @@ export function Shirt() {
           : apply(mesh.material);
       }
     });
+
+    // projeta a estampa enquanto o wrapper ainda está em escala 1
+    addShirtDecals(wrapper, root, frontTex, backTex);
+    wrapper.scale.setScalar(scale);
     return wrapper;
-  }, [scene]);
+  }, [scene, frontTex, backTex]);
 
   useFrame((state, dt) => {
-    const p = useStore.getState().scrollProgress;
     const t = state.clock.elapsedTime;
     const g = outer.current;
     if (!g) return;
 
-    // rotação conduzida pelo scroll (~1.1 volta) + respiração idle
-    const targetRotY = -0.35 + p * Math.PI * 2.1 + Math.sin(t * 0.4) * 0.04;
-    const targetRotX = 0.05 + Math.sin(p * Math.PI) * 0.12; // inclina no meio
+    // pose fixa de hero: leve balanço idle, sem giro por scroll
+    const targetRotY = -0.15 + Math.sin(t * 0.4) * 0.08;
+    const targetRotX = 0.05;
     g.rotation.y = damp(g.rotation.y, targetRotY, 4, dt);
     g.rotation.x = damp(g.rotation.x, targetRotX, 4, dt);
 
-    // aproxima no trecho da "arte" (~0.25) e no CTA final (~0.9)
-    const zoom =
-      1 + Math.exp(-Math.pow((p - 0.25) / 0.12, 2)) * 0.18 +
-      Math.exp(-Math.pow((p - 0.92) / 0.08, 2)) * 0.22;
-    const targetScale = zoom;
-    const cs = g.scale.x;
-    const ns = damp(cs, targetScale, 4, dt);
-    g.scale.setScalar(ns);
-
-    // flutuação vertical sutil + deslocamento à direita no herói e no CTA final
-    const heroX = Math.max(0, (0.12 - p) / 0.12) * 1.15;
-    const finalX = Math.max(0, (p - 0.82) / 0.18) * 1.1;
-    const xOffset = heroX + finalX;
-    g.position.x = damp(g.position.x, xOffset, 3.5, dt);
-    g.position.y = damp(g.position.y, Math.sin(t * 0.5) * 0.06, 3, dt);
+    // à direita com a estampa inteira, um pouco acima
+    g.position.x = damp(g.position.x, 1.9, 3.5, dt);
+    g.position.y = damp(g.position.y, -0.45 + Math.sin(t * 0.5) * 0.06, 3, dt);
   });
 
   return (

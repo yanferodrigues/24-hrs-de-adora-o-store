@@ -1,7 +1,12 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import BuyButton from "@/components/BuyButton";
+
+const Scene3D = dynamic(() => import("@/components/three/Scene3D"), {
+  ssr: false,
+});
 
 const line = {
   hidden: { y: "110%" },
@@ -17,6 +22,8 @@ export default function Hero() {
       id="top"
       className="relative flex min-h-[100svh] flex-col justify-between pt-28 pb-10"
     >
+      <Scene3D />
+
       <div className="wrap">
         <motion.p
           initial={{ opacity: 0 }}
