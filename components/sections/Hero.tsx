@@ -20,7 +20,7 @@ export default function Hero() {
         transition={{ duration: 0.9, ease }}
         className="sacred mb-10"
       >
-        Congresso de Jovens · 15 · 10 · 2026
+        Congresso de Louvor · Apocalipse 19
       </motion.p>
 
       {/* relíquia: o lettering dourado brilhando no escuro */}
@@ -32,7 +32,7 @@ export default function Hero() {
       >
         <Image
           src="/designs/front.webp"
-          alt="VOLTAREI — Apocalipse 19"
+          alt="VOLTAREI — Congresso de Louvor, Apocalipse 19"
           width={2048}
           height={832}
           priority
@@ -41,7 +41,7 @@ export default function Hero() {
         />
       </motion.div>
 
-      {/* nome do congresso, em serifa monumental */}
+      {/* o que é: congresso de louvor — o nome (VOLTAREI) está na arte acima */}
       <motion.h1
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -53,13 +53,23 @@ export default function Hero() {
           lineHeight: 1.15,
         }}
       >
-        24 Horas de Adoração
+        Congresso de Louvor
       </motion.h1>
+
+      {/* onde e quando */}
+      <motion.p
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease, delay: 0.52 }}
+        className="mt-4 font-mono text-[11px] uppercase tracking-[0.22em] text-gold-lite/90"
+      >
+        Igreja Brasil Para Cristo · 15 · 10 · 2026
+      </motion.p>
 
       <motion.p
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease, delay: 0.55 }}
+        transition={{ duration: 1, ease, delay: 0.6 }}
         className="mx-auto mt-5 max-w-md text-[15px] leading-relaxed text-mute"
       >
         A camiseta oficial do congresso. O Rei no cavalo branco —{" "}

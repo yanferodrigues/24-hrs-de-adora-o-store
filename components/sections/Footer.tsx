@@ -21,7 +21,7 @@ export default function Footer() {
   const wa = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
   const waHref = wa
     ? `https://wa.me/${wa}?text=${encodeURIComponent(
-        "Olá! Tenho interesse na camiseta do 24 Horas de Adoração."
+        "Olá! Tenho interesse na camiseta do congresso VOLTAREI."
       )}`
     : "#";
 
@@ -30,7 +30,7 @@ export default function Footer() {
       <div className="wrap flex flex-col gap-10">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div className="display text-3xl sm:text-4xl">
-            <span className="gold-text">Da noite à glória</span>
+            <span className="gold-text">Ele disse: voltarei</span>
           </div>
           <div className="flex gap-4 text-mute">
             <a
@@ -59,7 +59,8 @@ export default function Footer() {
             <ShieldCheck size={14} /> Pagamento seguro · Pix
           </span>
           <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-mute-2">
-            © {new Date().getFullYear()} 24 Horas de Adoração · Store — Feito para adorar.
+            © {new Date().getFullYear()} 24 Horas de Adoração · Igreja Brasil
+            Para Cristo
           </span>
         </div>
       </div>

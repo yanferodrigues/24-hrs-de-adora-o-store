@@ -19,7 +19,7 @@ export default function Faq() {
               className="display text-parchment"
               style={{ fontSize: "clamp(2rem,5.5vw,3.6rem)", lineHeight: 1.04 }}
             >
-              Tudo claro
+              O que mais perguntam
             </h2>
           </div>
         </Reveal>

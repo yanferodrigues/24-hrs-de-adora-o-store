@@ -6,7 +6,7 @@ export const PRODUCT = {
   currency: "BRL",
   eventDate: "2026-10-15T00:00:00-03:00", // 15/10/2026
   eventDateLabel: "15 de outubro de 2026",
-  tagline: "Da noite à glória",
+  tagline: "Ele disse: voltarei",
   sizes: ["P", "M", "G", "GG", "XG"],
 };
 
@@ -25,7 +25,7 @@ export const FEATURES = [
   {
     tag: "Caimento",
     title: "Corte oversized streetwear",
-    body: "Ombro caído, corpo amplo e comprimento moderno — o fit que os jovens realmente querem usar.",
+    body: "Ombro caído, corpo amplo e comprimento moderno — o corte que você vai usar muito além do congresso.",
   },
   {
     tag: "Acabamento",

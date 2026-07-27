@@ -6,7 +6,10 @@ import { Reveal } from "@/components/Reveal";
 const points = [
   { label: "O Cavaleiro", desc: "Fiel e Verdadeiro, montado no cavalo branco (Ap 19)." },
   { label: "A multidão", desc: "Reis e povos entregam suas coroas em adoração." },
-  { label: "A glória", desc: "A luz da cidade santa rompendo a escuridão." },
+  {
+    label: "O Rei dos reis",
+    desc: "No manto e na coxa, o nome escrito: Rei dos reis e Senhor dos senhores (Ap 19.16).",
+  },
 ];
 
 export default function ArtReveal() {

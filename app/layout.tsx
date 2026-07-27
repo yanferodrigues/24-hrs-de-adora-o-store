@@ -22,13 +22,13 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VOLTAREI · 24 Horas de Adoração — Camiseta Oficial",
+  title: "VOLTAREI · Congresso de Louvor — Camiseta Oficial",
   description:
-    "A camiseta oficial do congresso 24 Horas de Adoração. VOLTAREI — o Rei no cavalo branco, Apocalipse 19. Estampa dourada em algodão premium. Edição limitada, entrega antes de 15/10/2026.",
+    "A camiseta oficial do VOLTAREI, congresso de louvor da Igreja Brasil Para Cristo — 15/10/2026. O Rei no cavalo branco, Apocalipse 19. Estampa dourada em algodão premium, edição limitada.",
   openGraph: {
-    title: "VOLTAREI · 24 Horas de Adoração",
+    title: "VOLTAREI · Congresso de Louvor",
     description:
-      "O Rei está voltando. Apocalipse 19. Camiseta oficial do congresso — edição limitada.",
+      "O Rei está voltando. Apocalipse 19. Camiseta oficial do congresso de louvor VOLTAREI — Igreja Brasil Para Cristo, 15/10/2026.",
     type: "website",
   },
   robots: { index: true, follow: true },

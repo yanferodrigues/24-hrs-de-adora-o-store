@@ -18,7 +18,7 @@ export default function SizeGuide() {
               className="display text-parchment"
               style={{ fontSize: "clamp(2rem,5.5vw,3.6rem)", lineHeight: 1.04 }}
             >
-              Escolha sem erro
+              Na dúvida, um abaixo
             </h2>
             <p className="mt-5 max-w-md text-sm leading-relaxed text-mute">
               Modelagem oversized: se quiser um caimento mais justo, considere um

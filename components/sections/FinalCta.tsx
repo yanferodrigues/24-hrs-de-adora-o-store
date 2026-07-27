@@ -29,7 +29,7 @@ export default function FinalCta() {
             className="display mt-12 text-parchment"
             style={{ fontSize: "clamp(2.4rem,8vw,5.5rem)", lineHeight: 1.0 }}
           >
-            Vista a <span className="gold-text">glória</span>
+            Vista o <span className="gold-text">Voltarei</span>
           </h2>
         </Reveal>
 
