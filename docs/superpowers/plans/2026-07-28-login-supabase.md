@@ -12,12 +12,13 @@
 
 - **Node portátil:** se `npm` não estiver no PATH, rodar antes `$env:Path = "$env:USERPROFILE\nodejs;$env:Path"`.
 - **Parar o `npm run dev` antes de qualquer `npm run build`** — build e dev compartilham `.next` e conflitam.
-- **Todo componente usa os tokens CSS** (`var(--bg)`, `--ink`, `--gold`, `--blood`, `--line`…), nunca cores fixas.
+- **Todo componente usa os tokens CSS** (`var(--bg)`, `--ink`, `--gold`, `--blood`, `--line`…), nunca cores fixas. **Única exceção:** o ícone do Google no `AuthPanel`, cujas cores de marca (`#4285F4`, `#34A853`, `#FBBC05`, `#EA4335`) são exigidas pelas diretrizes do Google e não podem ser tematizadas.
+- **As classes de input e label dos formulários de auth vivem em `components/auth/fields.ts`** e são importadas pelas três telas. Não duplicar a string de className.
 - **Textos de UI em português do Brasil.**
 - **Sem dependência de teste:** os testes usam `node --test`, embutido no Node 22, rodando `.ts` nativamente.
 - **Imports em arquivos de teste precisam da extensão `.ts` explícita** (exigência do type stripping do Node). Por isso `tests/` fica fora do `tsconfig.json`.
 - **Chaves:** `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY` já estão preenchidas no `.env.local`.
-- **Já verificado no painel:** provider Google ativo, URI de redirecionamento do Google aceita, cadastro liberado. **Pendente:** desligar "Confirm email" (Authentication → Sign In / Providers → Email). Enquanto estiver ligado, cada cadastro novo exige clicar num link no e-mail antes de conseguir entrar — o que atrapalha os testes das Tasks 5 e 7.
+- **Painel do Supabase verificado ao vivo em 28/07/2026** (`GET /auth/v1/settings`): provider Google ativo, URI de redirecionamento aceita pelo Google, cadastro liberado e **"Confirm email" desligado** (`mailer_autoconfirm: true`). Nada pendente de configuração — o cadastro loga direto, sem e-mail de confirmação.
 - **`user_metadata`:** cadastro por senha grava `name`; o Google grava `full_name`. A leitura sempre passa por `toSessionUser`.
 
 ---
@@ -663,6 +664,7 @@ git commit -m "feat(auth): sessao do Supabase disponivel no store"
 ### Task 4: Moldura visual, tela de login e menu do usuário
 
 **Files:**
+- Create: `components/auth/fields.ts`
 - Create: `components/auth/AuthShell.tsx`
 - Create: `components/auth/AuthPanel.tsx`
 - Create: `components/auth/UserMenu.tsx`
@@ -673,6 +675,7 @@ git commit -m "feat(auth): sessao do Supabase disponivel no store"
 **Interfaces:**
 - Consumes: `createClient` (client e server), `MSG`, `isValidEmail`, `isValidPassword`, `safeNext`, `useStore`.
 - Produces:
+  - `INPUT_CLASS: string` e `LABEL_CLASS: string` de `components/auth/fields.ts` — usados aqui e nas Tasks 7 e 8
   - `<AuthShell rotulo titulo children rodape />`
   - `<AuthPanel mode="login" | "register" next />`
   - `<UserMenu />`
@@ -683,7 +686,21 @@ conseguia ler. Com o Supabase, o provider é ligado no painel — não há nada 
 ambiente para consultar, e a prop seria sempre `true`. Foi removida em vez de
 virar código morto. Já está verificado que o provider está ativo.
 
-- [ ] **Step 1: Criar `components/auth/AuthShell.tsx`**
+- [ ] **Step 1: Criar `components/auth/fields.ts`**
+
+As três telas de auth (login/cadastro, recuperar senha, nova senha) usam os
+mesmos campos. A classe mora aqui uma vez só.
+
+```ts
+/** Estilo dos campos das telas de autenticação. */
+export const INPUT_CLASS =
+  "w-full rounded-lg border border-line bg-transparent px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-mute-2 focus:border-[var(--gold)]";
+
+export const LABEL_CLASS =
+  "mb-1.5 block font-mono text-[10px] uppercase tracking-wider text-mute-2";
+```
+
+- [ ] **Step 2: Criar `components/auth/AuthShell.tsx`**
 
 ```tsx
 import Image from "next/image";
@@ -732,7 +749,7 @@ export default function AuthShell({
 }
 ```
 
-- [ ] **Step 2: Criar `components/auth/AuthPanel.tsx`**
+- [ ] **Step 3: Criar `components/auth/AuthPanel.tsx`**
 
 ```tsx
 "use client";
@@ -750,13 +767,13 @@ import {
   normalizeEmail,
   normalizeName,
 } from "@/lib/auth-validation";
+import { INPUT_CLASS, LABEL_CLASS } from "./fields";
 
-const input =
-  "w-full rounded-lg border border-line bg-transparent px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-mute-2 focus:border-[var(--gold)]";
-const label =
-  "mb-1.5 block font-mono text-[10px] uppercase tracking-wider text-mute-2";
-
-/** Ícone do Google em SVG inline — o site não carrega assets externos. */
+/**
+ * Ícone do Google em SVG inline — o site não carrega assets externos.
+ * As cores são as da marca, exigidas pelas diretrizes do Google: é a única
+ * exceção à regra de usar só tokens do tema.
+ */
 function GoogleIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true">
@@ -872,12 +889,12 @@ export default function AuthPanel({
       <form onSubmit={enviar} noValidate>
         {registrando && (
           <div className="mb-4">
-            <label className={label} htmlFor="nome">
+            <label className={LABEL_CLASS} htmlFor="nome">
               Nome completo
             </label>
             <input
               id="nome"
-              className={input}
+              className={INPUT_CLASS}
               value={nome}
               onChange={(e) => setNome(e.target.value)}
               placeholder="Yan Felipe"
@@ -887,14 +904,14 @@ export default function AuthPanel({
         )}
 
         <div className="mb-4">
-          <label className={label} htmlFor="email">
+          <label className={LABEL_CLASS} htmlFor="email">
             E-mail
           </label>
           <input
             id="email"
             type="email"
             inputMode="email"
-            className={input}
+            className={INPUT_CLASS}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="voce@email.com"
@@ -903,13 +920,13 @@ export default function AuthPanel({
         </div>
 
         <div className="mb-5">
-          <label className={label} htmlFor="senha">
+          <label className={LABEL_CLASS} htmlFor="senha">
             Senha
           </label>
           <input
             id="senha"
             type="password"
-            className={input}
+            className={INPUT_CLASS}
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
             placeholder={registrando ? "mínimo 8 caracteres" : "••••••••"}
@@ -956,7 +973,7 @@ export default function AuthPanel({
 }
 ```
 
-- [ ] **Step 3: Criar `app/login/page.tsx`**
+- [ ] **Step 4: Criar `app/login/page.tsx`**
 
 ```tsx
 import Link from "next/link";
@@ -1010,7 +1027,7 @@ export default async function LoginPage({
 }
 ```
 
-- [ ] **Step 4: Criar `components/auth/UserMenu.tsx`**
+- [ ] **Step 5: Criar `components/auth/UserMenu.tsx`**
 
 ```tsx
 "use client";
@@ -1052,7 +1069,7 @@ export default function UserMenu() {
 }
 ```
 
-- [ ] **Step 5: Ligar o `UserMenu` no `Topbar`**
+- [ ] **Step 6: Ligar o `UserMenu` no `Topbar`**
 
 Em `components/Topbar.tsx`, acrescentar ao topo:
 
@@ -1068,7 +1085,7 @@ E, dentro do `<header>`, logo depois do `</a>` do link "24H DE ADORAÇÃO SHOP":
 
 O `<header>` já tem `justify-between`, então o menu encosta na direita sem mudança de layout.
 
-- [ ] **Step 6: Ligar o `UserMenu` no `ShopHeader`**
+- [ ] **Step 7: Ligar o `UserMenu` no `ShopHeader`**
 
 Em `components/shop/ShopHeader.tsx`, acrescentar ao topo:
 
@@ -1099,7 +1116,7 @@ Trocar o `<button>` do carrinho por um contêiner que junte os dois — ou seja,
         </div>
 ```
 
-- [ ] **Step 7: Rodar o smoke — agora deve passar inteiro**
+- [ ] **Step 8: Rodar o smoke — agora deve passar inteiro**
 
 ```bash
 npm run smoke
@@ -1107,11 +1124,11 @@ npm run smoke
 
 Esperado: `Tudo certo.` — inclusive os dois itens de `/login`, que falhavam na Task 2.
 
-- [ ] **Step 8: Conferir a tela no navegador**
+- [ ] **Step 9: Conferir a tela no navegador**
 
 Com o dev server rodando, abrir `http://localhost:3000/produto`. Esperado: redireciona para `/login?next=%2Fproduto`, mostrando o lettering VOLTAREI, o painel com o botão do Google, a costura dourada e o formulário.
 
-- [ ] **Step 9: Commit**
+- [ ] **Step 10: Commit**
 
 ```bash
 git add components/auth app/login components/Topbar.tsx components/shop/ShopHeader.tsx
@@ -1286,8 +1303,7 @@ import { Loader2, MailCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { MSG, isValidEmail, normalizeEmail } from "@/lib/auth-validation";
 
-const input =
-  "w-full rounded-lg border border-line bg-transparent px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-mute-2 focus:border-[var(--gold)]";
+import { INPUT_CLASS, LABEL_CLASS } from "./fields";
 
 export default function ResetForm() {
   const [email, setEmail] = useState("");
@@ -1337,7 +1353,7 @@ export default function ResetForm() {
   return (
     <form onSubmit={enviar} noValidate>
       <label
-        className="mb-1.5 block font-mono text-[10px] uppercase tracking-wider text-mute-2"
+        className={LABEL_CLASS}
         htmlFor="email"
       >
         E-mail da conta
@@ -1346,7 +1362,7 @@ export default function ResetForm() {
         id="email"
         type="email"
         inputMode="email"
-        className={input}
+        className={INPUT_CLASS}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="voce@email.com"
@@ -1415,8 +1431,7 @@ import { Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { MSG, isValidPassword } from "@/lib/auth-validation";
 
-const input =
-  "w-full rounded-lg border border-line bg-transparent px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-mute-2 focus:border-[var(--gold)]";
+import { INPUT_CLASS, LABEL_CLASS } from "./fields";
 
 export default function NovaSenhaForm() {
   const router = useRouter();
@@ -1450,7 +1465,7 @@ export default function NovaSenhaForm() {
   return (
     <form onSubmit={enviar} noValidate>
       <label
-        className="mb-1.5 block font-mono text-[10px] uppercase tracking-wider text-mute-2"
+        className={LABEL_CLASS}
         htmlFor="senha"
       >
         Nova senha
@@ -1458,7 +1473,7 @@ export default function NovaSenhaForm() {
       <input
         id="senha"
         type="password"
-        className={input}
+        className={INPUT_CLASS}
         value={senha}
         onChange={(e) => setSenha(e.target.value)}
         placeholder="mínimo 8 caracteres"
@@ -1765,7 +1780,7 @@ O que o smoke não consegue cobrir, porque exige browser e clique humano:
 
 ## Antes de publicar na Vercel
 
-- [ ] Desligar "Confirm email" no Supabase (se ainda não).
+- [x] Desligar "Confirm email" no Supabase — já feito e verificado em 28/07/2026.
 - [ ] Cadastrar na Vercel: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_SITE_URL` (domínio real), `MP_ACCESS_TOKEN`, `NEXT_PUBLIC_WHATSAPP_NUMBER`.
 - [ ] No Supabase, Authentication → URL Configuration: `Site URL` = domínio real, e `https://SEU-DOMINIO/**` nas Redirect URLs.
 - [ ] Conferir que o projeto Supabase não está hibernado (pausa após 7 dias sem atividade).
