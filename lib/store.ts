@@ -14,12 +14,22 @@ export interface CartItem {
   price: number;
 }
 
+export interface SessionUser {
+  id: string;
+  email: string;
+  name: string;
+}
+
 interface StoreState {
   /** progresso global do scroll 0..1 — compartilhado com a cena 3D */
   scrollProgress: number;
   setScrollProgress: (p: number) => void;
   size: string;
   setSize: (s: string) => void;
+
+  /** ---- Sessão ---- */
+  user: SessionUser | null;
+  setUser: (u: SessionUser | null) => void;
 
   /** ---- Carrinho ---- */
   cart: CartItem[];
@@ -36,6 +46,9 @@ export const useStore = create<StoreState>((set) => ({
   setScrollProgress: (scrollProgress) => set({ scrollProgress }),
   size: "M",
   setSize: (size) => set({ size }),
+
+  user: null,
+  setUser: (user) => set({ user }),
 
   cart: [],
   cartOpen: false,

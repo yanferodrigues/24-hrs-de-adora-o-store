@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Cinzel, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { createClient } from "@/lib/supabase/server";
+import { toSessionUser } from "@/lib/supabase/session";
+import SessionHydrator from "@/components/SessionHydrator";
 
 // Display: Cinzel — serifa romana/inscricional (monumental, "coroação"),
 // combina com o tema Apocalipse 19 e cobre acentos PT-BR (À Ã Ç Ó).
@@ -34,17 +37,23 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <html
       lang="pt-BR"
       className={`${display.variable} ${sans.variable} ${mono.variable}`}
     >
       <body>
+        <SessionHydrator user={toSessionUser(user)} />
         {children}
         <div className="grain" aria-hidden="true" />
       </body>
