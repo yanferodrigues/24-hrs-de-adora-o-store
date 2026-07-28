@@ -6,9 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "node --test \"tests/**/*.test.ts\"",
+    "smoke": "node scripts/smoke-auth.mjs"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.4",
+    "@supabase/supabase-js": "^2.111.0",
     "framer-motion": "11.11.9",
     "lenis": "1.1.17",
     "lucide-react": "0.451.0",
