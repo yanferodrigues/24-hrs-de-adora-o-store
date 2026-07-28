@@ -92,8 +92,9 @@ export default function ProdutoPage() {
           </div>
 
           <p className="mt-6 max-w-prose text-[15px] leading-relaxed text-mute">
-            A camiseta oficial do congresso <b className="text-ink">24 Horas de
-            Adoração</b>. Estampa do Rei montado no cavalo com a multidão em
+            A camiseta oficial do <b className="text-ink">VOLTAREI</b>,
+            congresso de louvor da Igreja Brasil Para Cristo (15/10/2026).
+            Estampa do Rei montado no cavalo com a multidão em
             adoração (Apocalipse 19), impressa em algodão premium de gramatura
             alta. Corte oversized streetwear, acabamento reforçado e estampa de
             alta durabilidade.

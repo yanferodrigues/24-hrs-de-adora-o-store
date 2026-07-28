@@ -14,20 +14,7 @@ function diff(target: number) {
   };
 }
 
-// Halo claro (cor do fundo) em volta do número: invisível sobre o fundo claro,
-// destaca o número escuro ao passar sobre a camiseta. NÃO usa mix-blend-mode —
-// por isso é estável no timer (que repinta a cada segundo e derrubaria o blend).
-const HALO =
-  "0 0 1px var(--bg), 1px 1px 0 var(--bg), -1px 1px 0 var(--bg), 1px -1px 0 var(--bg), -1px -1px 0 var(--bg), 0 0 10px var(--bg), 0 0 20px var(--bg)";
-
-export default function Countdown({
-  compact = false,
-  blend = false,
-}: {
-  compact?: boolean;
-  /** timer sobre a camiseta 3D: números escuros + halo claro (legível sobre claro e escuro) */
-  blend?: boolean;
-}) {
+export default function Countdown({ compact = false }: { compact?: boolean }) {
   const target = new Date(PRODUCT.eventDate).getTime();
   // inicia zerado para casar SSR/cliente (evita mismatch de hidratação)
   const [t, setT] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
@@ -46,26 +33,30 @@ export default function Countdown({
   ];
 
   return (
-    <div className={`flex items-end ${compact ? "gap-3" : "gap-5"}`}>
-      {cells.map(([v, l]) => (
-        <div key={l} className="flex flex-col items-center">
-          <span
-            className={`display tabular-nums text-ink ${
-              compact ? "text-3xl" : "text-5xl md:text-6xl"
-            }`}
-            style={{
-              fontVariantNumeric: "tabular-nums",
-              textShadow: blend ? HALO : undefined,
-            }}
-          >
-            {String(v).padStart(2, "0")}
-          </span>
-          <span
-            className="mt-1 font-mono text-[9px] uppercase tracking-[0.22em] text-mute-2"
-            style={{ textShadow: blend ? HALO : undefined }}
-          >
-            {l}
-          </span>
+    <div className={`flex items-end ${compact ? "gap-3" : "gap-4 sm:gap-6"}`}>
+      {cells.map(([v, l], i) => (
+        <div key={l} className="flex items-end gap-4 sm:gap-6">
+          <div className="flex flex-col items-center">
+            <span
+              className={`font-mono font-semibold tabular-nums text-parchment ${
+                compact ? "text-2xl" : "text-4xl sm:text-6xl"
+              }`}
+              style={{ fontVariantNumeric: "tabular-nums" }}
+            >
+              {String(v).padStart(2, "0")}
+            </span>
+            <span className="mt-2 font-mono text-[9px] uppercase tracking-[0.24em] text-mute-2">
+              {l}
+            </span>
+          </div>
+          {i < cells.length - 1 && (
+            <span
+              className={`text-gold-deep ${compact ? "text-xl" : "text-3xl sm:text-5xl"} -translate-y-1`}
+              aria-hidden
+            >
+              ·
+            </span>
+          )}
         </div>
       ))}
     </div>

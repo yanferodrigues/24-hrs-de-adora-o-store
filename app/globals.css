@@ -3,18 +3,32 @@
 @tailwind utilities;
 
 :root {
-  /* TEMA único — fundo branco, camiseta preta */
-  --bg: #fafaf8;
-  --surface: #ffffff;
-  --surface-2: #f1f1ee;
-  --line: #e3e3de;
-  --line-soft: #ecece7;
-  --ink: #0a0a0b;
-  --mute: #5f5f63;
-  --mute-2: #a2a29c;
-  --accent: #0a0a0b;
-  --accent-on: #ffffff;
-  --glow: 10, 10, 11;
+  /* ---- Relíquia dourada em claro: branco gelo + ouro + vermelho-sangue ---- */
+  --void: #eff1ef; /* fundo — branco gelo */
+  --void-2: #ffffff; /* superfície elevada (cards) */
+  --void-3: #e4e7e4; /* hover / inputs */
+
+  --gold: #9a7328; /* acento primário — ouro fechado, legível no claro */
+  --gold-lite: #b98f3b; /* hover */
+  --gold-deep: #6e4f17; /* hairlines e detalhes */
+  --blood: #93261e; /* vermelho-sangue — Apocalipse 19 */
+  --blood-lite: #a8322a;
+  --parchment: #14110c; /* texto principal — preto quente */
+  --ash: #5a544b; /* texto secundário */
+  --ash-2: #7c7568; /* texto terciário / faint */
+
+  /* mapeamento p/ tokens legados (herdados por muitos componentes) */
+  --bg: var(--void);
+  --surface: var(--void-2);
+  --surface-2: var(--void-3);
+  --line: #d9d6cd; /* hairline quente */
+  --line-soft: #e6e3db;
+  --ink: var(--parchment);
+  --mute: var(--ash);
+  --mute-2: var(--ash-2);
+  --accent: var(--gold);
+  --accent-on: #ffffff; /* texto claro sobre botão dourado */
+
   color-scheme: light;
 }
 
@@ -28,23 +42,22 @@ html {
 
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--mute);
+  background: var(--void);
+  color: var(--ash);
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 17px;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
-  transition: background 0.7s ease, color 0.7s ease;
 }
 
 ::selection {
-  background: var(--ink);
-  color: var(--bg);
+  background: var(--gold);
+  color: #ffffff;
 }
 
-/* ---- utility layers ---- */
+/* ---- camadas utilitárias ---- */
 @layer components {
   .wrap {
     width: 100%;
@@ -54,36 +67,74 @@ body {
     padding-right: 28px;
   }
 
+  /* rótulo técnico (dados, navegação) */
   .eyebrow {
     font-family: var(--font-mono), ui-monospace, monospace;
     font-size: 11px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: var(--mute-2);
+    color: var(--ash-2);
+  }
+
+  /* tag sagrada — eco do "APOCALIPSE 19" da estampa. Assinatura recorrente. */
+  .sacred {
+    font-family: var(--font-display), serif;
+    font-weight: 600;
+    font-size: clamp(11px, 1.1vw, 13px);
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: var(--blood-lite);
   }
 
   .display {
-    font-family: var(--font-display), "Arial Narrow", sans-serif;
+    font-family: var(--font-display), "Times New Roman", serif;
     text-transform: uppercase;
-    font-weight: 600;
-    line-height: 0.9;
-    letter-spacing: 0.005em;
+    font-weight: 700;
+    line-height: 0.98;
+    letter-spacing: 0.01em;
+    color: var(--parchment);
+  }
+
+  /* ênfase em ouro sólido (matte, sem gradiente/brilho) */
+  .gold-text {
+    color: var(--gold);
   }
 
   .outline-text {
     color: transparent;
-    -webkit-text-stroke: 1.4px var(--ink);
+    -webkit-text-stroke: 1.2px var(--gold-deep);
   }
 
-  /* Inversão dinâmica: letra branca que fica preta sobre áreas claras
-     (e branca sobre áreas escuras), pixel a pixel, contra o que está atrás
-     — inclusive a camiseta 3D. Funciona nos dois temas. */
-  .blend-invert {
-    color: #ffffff !important;
-    mix-blend-mode: difference;
+  /* wrapper de posicionamento da arte (sem glow) */
+  .relic {
+    position: relative;
   }
-  .blend-invert .outline-text {
-    -webkit-text-stroke-color: #ffffff;
+  /* o lettering foi desenhado em ouro claro para brilhar no preto; no fundo
+     claro ele some, então fechamos o tom para virar ouro velho/bronze.
+     Só para a arte de lettering — a ilustração colorida vai sem filtro. */
+  .relic-ink img {
+    filter: brightness(0.6) saturate(1.55) contrast(1.1);
+  }
+
+  /* costura sagrada: hairline dourada com marca vermelha no centro */
+  .seam {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    color: var(--blood-lite);
+  }
+  .seam::before,
+  .seam::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--gold-deep) 45%,
+      var(--gold-deep) 55%,
+      transparent
+    );
   }
 
   .btn-magnetic {
@@ -94,33 +145,57 @@ body {
     gap: 10px;
     font-family: var(--font-mono), monospace;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     font-size: 13px;
     font-weight: 600;
     color: var(--accent-on);
-    background: var(--accent);
-    border: 1px solid var(--accent);
+    background: var(--gold);
+    border: 1px solid var(--gold);
     border-radius: 999px;
     padding: 16px 28px;
     cursor: pointer;
     overflow: hidden;
-    transition: transform 0.25s ease, background 0.4s ease, color 0.4s ease;
+    transition: background 0.2s ease, transform 0.25s ease;
+  }
+  .btn-magnetic:hover {
+    background: var(--gold-lite);
+    border-color: var(--gold-lite);
   }
   .btn-ghost {
     background: transparent;
-    color: var(--ink);
+    color: var(--gold);
     border-color: var(--line);
+  }
+  .btn-ghost:hover {
+    background: transparent;
+    border-color: var(--gold-deep);
+  }
+
+  /* card de superfície com hairline quente */
+  .card {
+    background: var(--void-2);
+    border: 1px solid var(--line);
+    border-radius: 16px;
   }
 }
 
-/* film grain overlay */
+/* trilho horizontal sem barra de rolagem visível (galerias no celular) */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* grão de filme sutil (claro — multiply, senão some no branco) */
 .grain {
   position: fixed;
   inset: 0;
   z-index: 60;
   pointer-events: none;
-  opacity: 0.05;
-  mix-blend-mode: overlay;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
