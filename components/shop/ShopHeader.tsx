@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ShoppingBag, ArrowLeft } from "lucide-react";
 import { useStore } from "@/lib/store";
+import UserMenu from "@/components/auth/UserMenu";
 
 export default function ShopHeader() {
   const cart = useStore((s) => s.cart);
@@ -26,21 +27,24 @@ export default function ShopHeader() {
           24H DE ADORAÇÃO
         </Link>
 
-        <button
-          onClick={() => setCartOpen(true)}
-          aria-label="Abrir carrinho"
-          className="relative flex h-10 w-10 items-center justify-center rounded-full border border-line text-ink transition-colors hover:border-ink"
-        >
-          <ShoppingBag size={18} />
-          {count > 0 && (
-            <span
-              className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full px-1 font-mono text-[10px] font-bold tabular-nums"
-              style={{ background: "var(--accent)", color: "var(--accent-on)" }}
-            >
-              {count}
-            </span>
-          )}
-        </button>
+        <div className="flex items-center gap-4">
+          <UserMenu />
+          <button
+            onClick={() => setCartOpen(true)}
+            aria-label="Abrir carrinho"
+            className="relative flex h-10 w-10 items-center justify-center rounded-full border border-line text-ink transition-colors hover:border-ink"
+          >
+            <ShoppingBag size={18} />
+            {count > 0 && (
+              <span
+                className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full px-1 font-mono text-[10px] font-bold tabular-nums"
+                style={{ background: "var(--accent)", color: "var(--accent-on)" }}
+              >
+                {count}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
     </header>
   );

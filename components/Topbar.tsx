@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useStore } from "@/lib/store";
+import UserMenu from "./auth/UserMenu";
 
 export default function Topbar() {
   const [progress, setProgress] = useState(0);
@@ -39,6 +40,7 @@ export default function Topbar() {
         >
           24H DE <b className="font-semibold">ADORAÇÃO</b> SHOP
         </a>
+        <UserMenu />
       </header>
     </>
   );
