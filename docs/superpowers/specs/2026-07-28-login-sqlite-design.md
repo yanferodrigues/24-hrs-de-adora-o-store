@@ -19,7 +19,7 @@ e continuam editáveis.
 | Decisão | Escolha | Motivo |
 |---|---|---|
 | Implementação | Na mão, REST via `fetch` | Mesmo padrão que o repo já usa no Mercado Pago (`app/api/checkout/route.ts` fala REST sem SDK). Evita `next-auth@beta`, cuja API ainda muda. |
-| Banco | `node:sqlite` (embutido no Node 22) | Zero dependência e zero compilação nativa — relevante porque o Node aqui é portátil, instalado sem admin. Verificado: roda sem flag no v22.23.1. |
+| Banco | **Turso (libSQL) via `@libsql/client`** | O site vai para a Vercel, onde o filesystem é efêmero — SQLite em arquivo perderia todas as contas a cada deploy. Turso é SQLite hospedado, e o mesmo cliente atende `file:` local e `libsql://` em produção: um driver só, sem `if` de ambiente e sem migração depois. |
 | Sessão | JWT assinado em cookie httpOnly | O gate roda no **middleware**, que é Edge runtime, e Edge **não abre SQLite**. Um JWT se verifica sem tocar no banco. |
 | Telas | Rotas `/login` e `/cadastro` | O Google redireciona a página inteira; um modal se perderia no retorno. E permite proteger `/produto` contra acesso direto pela URL. |
 | Nome no checkout (OAuth) | Vem do Google, editável | Menos atrito. Os dois caminhos (senha e Google) ficam idênticos: prefill de nome+email. |
@@ -29,12 +29,14 @@ Contrapartida aceita no JWT: **não dá para revogar uma sessão pelo servidor**
 Sair limpa o cookie e pronto. Para uma loja de camiseta de evento com sessão de
 30 dias, o custo de manter tabela de sessões não se paga.
 
-Ônus aceito no `node:sqlite`: o servidor imprime `ExperimentalWarning: SQLite is
-an experimental feature`. Todo o acesso fica isolado em `lib/db.ts`, então trocar
-por `better-sqlite3` no futuro é mexer em um arquivo só.
+Consequência do libSQL remoto: as consultas são **assíncronas** (`await
+db.execute(...)`), diferente do `node:sqlite`, que é síncrono. Todas as funções
+de `lib/db.ts` são `async`. O SQL em si é idêntico ao SQLite.
 
 ## Dependências novas
 
+- `@libsql/client` — driver do Turso/libSQL. Mesmo cliente para o arquivo local
+  e para o banco remoto.
 - `bcryptjs` + `@types/bcryptjs` — hash de senha em JS puro (não compila nada).
 - `jose` — assina/verifica JWT; funciona em Node **e** em Edge (o middleware
   precisa disso), e também verifica o `id_token` do Google contra o JWKS dele.
@@ -56,13 +58,23 @@ AUTH_SECRET=
 # Sem estas duas variáveis o botão "Entrar com Google" simplesmente não aparece.
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
+
+# Banco (Turso / libSQL).
+# Local, sem cadastrar nada:   TURSO_DATABASE_URL=file:data/app.db
+# Produção (Vercel): pegue os dois valores no painel do Turso.
+TURSO_DATABASE_URL=file:data/app.db
+TURSO_AUTH_TOKEN=
 ```
 
 `NEXT_PUBLIC_SITE_URL` já existe e passa a ser usada para montar o `redirect_uri`.
 
+O `TURSO_AUTH_TOKEN` fica vazio no desenvolvimento local (arquivo não pede
+autenticação) e é obrigatório em produção.
+
 ## Banco de dados
 
-Arquivo: `data/app.db`. Adicionar `/data` ao `.gitignore`.
+Local: arquivo `data/app.db` (adicionar `/data` ao `.gitignore`).
+Produção: banco Turso, mesma estrutura.
 
 ```sql
 CREATE TABLE IF NOT EXISTS users (
@@ -83,16 +95,21 @@ erro. Essa vinculação só acontece quando o `id_token` do Google traz
 `email_verified: true` — sem isso, seria possível sequestrar uma conta
 registrando um e-mail alheio não verificado no Google.
 
-O schema é criado no boot através de um `CREATE TABLE IF NOT EXISTS` executado na
-primeira vez que `lib/db.ts` é importado. Não há sistema de migração: se o schema
-mudar depois, o passo é documentado à mão (o banco é pequeno e local).
+O schema é criado por `scripts/db-init.mjs`, rodado uma vez contra o banco local
+e uma vez contra o Turso (`npm run db:init`). Fazer isso num script, e não no
+boot da aplicação, evita que **toda** requisição serverless na Vercel pague um
+`CREATE TABLE IF NOT EXISTS` de ida e volta pela rede.
+
+Não há sistema de migração: se o schema mudar depois, o passo é documentado à
+mão e o script reexecutado. Numa tabela só, isso basta.
 
 ## Módulos
 
 ### `lib/db.ts` (Node runtime)
-Abre um `DatabaseSync` singleton (guardado em `globalThis` para sobreviver ao
-hot-reload do Next), garante o schema e exporta as consultas tipadas:
-`findUserByEmail`, `findUserByGoogleId`, `createUser`, `linkGoogleAccount`.
+Cria um `@libsql/client` singleton (guardado em `globalThis` para sobreviver ao
+hot-reload do Next) a partir de `TURSO_DATABASE_URL` + `TURSO_AUTH_TOKEN`, e
+exporta as consultas tipadas, todas `async`: `findUserByEmail`,
+`findUserByGoogleId`, `createUser`, `linkGoogleAccount`.
 Nenhum outro módulo fala SQL.
 
 ### `lib/session.ts` — puro, Edge-safe
@@ -256,11 +273,16 @@ painel administrativo. São features separadas; entram depois se fizerem falta.
 
 ## Riscos conhecidos
 
-1. **Webpack e `node:sqlite`** — builtins com prefixo `node:` são externalizados
-   pelo webpack 5, então deve funcionar direto, mas isso é o primeiro item a
-   verificar na implementação. Se der problema, adicionar `better-sqlite3` como
-   plano B (a API é quase idêntica e o acesso está isolado em `lib/db.ts`).
-2. **`data/app.db` não sobrevive a deploy serverless** (Vercel tem filesystem
-   efêmero). Enquanto o site rodar local ou em servidor com disco, tudo bem. Se
-   for para a Vercel, o banco precisa virar Turso/Postgres — nesse cenário só
-   `lib/db.ts` muda.
+1. **Rate limit em memória não funciona direito na Vercel.** Cada função
+   serverless tem sua própria memória e some entre invocações, então o contador
+   de 5 tentativas é bem mais frouxo em produção do que localmente. Aceito por
+   ora: continua barrando o script ingênuo que bate mil vezes na mesma conexão,
+   e a alternativa (contador no banco, ou Upstash) não se justifica nesta
+   escala. Fica registrado como dívida consciente, não como descuido.
+2. **Latência de rede por consulta.** Toda leitura do banco vira uma chamada
+   HTTP ao Turso. No login isso é irrelevante (uma consulta), e o gate do
+   middleware **não toca no banco** — é justamente por isso que a sessão é JWT.
+3. **Variáveis de ambiente precisam ser cadastradas na Vercel**, não só no
+   `.env.local`: `AUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`,
+   `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` e `NEXT_PUBLIC_SITE_URL` com o
+   domínio real. Esquecer qualquer uma derruba o login só em produção.
