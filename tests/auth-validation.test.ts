@@ -44,8 +44,32 @@ test("safeNext só aceita caminho interno", () => {
   assert.equal(safeNext("/produto?a=1"), "/produto?a=1");
   assert.equal(safeNext(null), "/produto");
   assert.equal(safeNext(""), "/produto");
-  // open redirect: os dois casos abaixo sairiam do nosso domínio
+  // open redirect: os casos abaixo sairiam do nosso domínio
   assert.equal(safeNext("//site-malicioso.com"), "/produto");
   assert.equal(safeNext("https://site-malicioso.com"), "/produto");
   assert.equal(safeNext("/nova-senha", "/login"), "/nova-senha");
+});
+
+test("safeNext recusa barra invertida (o parser de URL a trata como barra)", () => {
+  assert.equal(safeNext("/\\site-malicioso.com"), "/produto");
+  assert.equal(safeNext("/\\\\site-malicioso.com"), "/produto");
+  assert.equal(safeNext("/\\site-malicioso.com", "/login"), "/login");
+  // caminho interno com barra invertida mais adiante continua passando:
+  // só a segunda posição decide o domínio de destino
+  assert.equal(safeNext("/produto/a\\b"), "/produto/a\\b");
+});
+
+test("safeNext: o que ele barra realmente não sai do domínio", () => {
+  const origem = "https://loja.com";
+  for (const entrada of [
+    "//site-malicioso.com",
+    "/\\site-malicioso.com",
+    "/\\\\site-malicioso.com",
+    "https://site-malicioso.com",
+  ]) {
+    // prova de que a entrada crua escaparia...
+    assert.notEqual(new URL(entrada, origem).origin, origem);
+    // ...e de que o valor devolvido por safeNext não escapa
+    assert.equal(new URL(safeNext(entrada), origem).origin, origem);
+  }
 });

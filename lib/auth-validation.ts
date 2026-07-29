@@ -50,6 +50,12 @@ export function safeNext(
 ): string {
   if (!raw) return fallback;
   if (!raw.startsWith("/")) return fallback;
-  if (raw.startsWith("//")) return fallback;
+  // Barra invertida importa tanto quanto barra normal: o parser de URL (padrão
+  // WHATWG, usado por `new URL`, pelo navegador e pelo `redirect()` do Next)
+  // converte "\" em "/" antes de resolver o endereço. Ou seja,
+  // `new URL("/\\site-malicioso.com", "https://nossa-loja.com").href` resulta em
+  // "https://site-malicioso.com/" — exatamente o mesmo escape de domínio de
+  // "//site-malicioso.com". Por isso rejeitamos os dois na segunda posição.
+  if (raw[1] === "/" || raw[1] === "\\") return fallback;
   return raw;
 }
