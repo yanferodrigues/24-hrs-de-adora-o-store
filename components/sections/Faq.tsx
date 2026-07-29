@@ -21,6 +21,7 @@ export default function Faq() {
             >
               O que mais perguntam
             </h2>
+            <span aria-hidden className="blood-mark mt-6" />
           </div>
         </Reveal>
 
@@ -37,10 +38,14 @@ export default function Faq() {
                   <span className="text-[15px] font-medium text-parchment">
                     {item.q}
                   </span>
+                  {/* aberto vira vermelho: a cor marca onde a pessoa está */}
                   <Plus
                     size={18}
-                    className="shrink-0 text-gold transition-transform duration-300"
-                    style={{ transform: isOpen ? "rotate(45deg)" : "none" }}
+                    className="shrink-0 transition-all duration-300"
+                    style={{
+                      transform: isOpen ? "rotate(45deg)" : "none",
+                      color: isOpen ? "var(--blood)" : "var(--gold)",
+                    }}
                   />
                 </button>
                 <AnimatePresence initial={false}>

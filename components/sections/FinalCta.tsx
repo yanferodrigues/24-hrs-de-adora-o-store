@@ -31,6 +31,7 @@ export default function FinalCta() {
           >
             Garanta sua <span className="gold-text"> camiseta</span>
           </h2>
+          <span aria-hidden className="blood-mark blood-mark-long mx-auto mt-8" />
         </Reveal>
 
         <Reveal delay={0.18}>

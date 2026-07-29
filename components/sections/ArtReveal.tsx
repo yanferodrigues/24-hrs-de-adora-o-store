@@ -39,6 +39,7 @@ export default function ArtReveal() {
             >
               A <span className="gold-text">volta</span> do Rei <span className="gold-text">Jesus</span>
             </h2>
+            <span aria-hidden className="blood-mark mt-6" />
           </Reveal>
 
           <Reveal delay={0.1}>

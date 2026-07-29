@@ -54,6 +54,7 @@ export default function Gallery() {
           >
             Ouro sobre o preto
           </h2>
+          <span aria-hidden className="blood-mark mt-6" />
         </Reveal>
 
         <div className="mt-14 grid auto-rows-[minmax(0,1fr)] grid-cols-2 gap-3 sm:grid-cols-4">

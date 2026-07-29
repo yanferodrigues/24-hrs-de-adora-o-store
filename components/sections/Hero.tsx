@@ -56,6 +56,15 @@ export default function Hero() {
         Congresso de Louvor
       </motion.h1>
 
+      {/* o traço da estampa, repetido sob o nome do congresso */}
+      <motion.span
+        aria-hidden
+        initial={{ opacity: 0, scaleX: 0.2 }}
+        animate={{ opacity: 1, scaleX: 1 }}
+        transition={{ duration: 0.9, ease, delay: 0.55 }}
+        className="blood-mark blood-mark-long mt-5"
+      />
+
       {/* onde e quando */}
       <motion.p
         initial={{ opacity: 0, y: 16 }}

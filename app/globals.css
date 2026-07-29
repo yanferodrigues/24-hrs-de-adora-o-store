@@ -11,8 +11,8 @@
   --gold: #9a7328; /* acento primário — ouro fechado, legível no claro */
   --gold-lite: #b98f3b; /* hover */
   --gold-deep: #6e4f17; /* hairlines e detalhes */
-  --blood: #93261e; /* vermelho-sangue — Apocalipse 19 */
-  --blood-lite: #a8322a;
+  --blood: #730e12; /* vermelho-sangue — o mesmo traço sob o VOLTAREI da estampa */
+  --blood-lite: #93261e; /* tom aberto, para quando o fechado pesa demais */
   --parchment: #14110c; /* texto principal — preto quente */
   --ash: #5a544b; /* texto secundário */
   --ash-2: #7c7568; /* texto terciário / faint */
@@ -83,7 +83,27 @@ body {
     font-size: clamp(11px, 1.1vw, 13px);
     letter-spacing: 0.42em;
     text-transform: uppercase;
-    color: var(--blood-lite);
+    color: var(--blood);
+  }
+
+  /* Marca de sangue: o traço que sustenta o nome na estampa.
+     Pontas afiladas, como pincelada — não é uma régua, é um gesto.
+     Vive sob os títulos de seção, repetindo embaixo do texto o mesmo
+     movimento que o "APOCALIPSE 19" faz embaixo do VOLTAREI. */
+  .blood-mark {
+    display: block;
+    height: 6px;
+    width: clamp(80px, 10vw, 116px);
+    background: var(--blood);
+    /* as pontas ocupam ~1/4 da largura de cada lado: é o que faz o traço ler
+       como agulha de pincel e não como régua de cantos cortados */
+    clip-path: polygon(0 50%, 24% 0, 76% 0, 100% 50%, 76% 100%, 24% 100%);
+  }
+  /* variante longa, para o Hero e o CTA final, onde há mais ar em volta */
+  .blood-mark-long {
+    height: 5px;
+    width: clamp(150px, 22vw, 240px);
+    clip-path: polygon(0 50%, 20% 0, 80% 0, 100% 50%, 80% 100%, 20% 100%);
   }
 
   .display {
@@ -121,7 +141,7 @@ body {
     display: flex;
     align-items: center;
     gap: 18px;
-    color: var(--blood-lite);
+    color: var(--blood);
   }
   .seam::before,
   .seam::after {

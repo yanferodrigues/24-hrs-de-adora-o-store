@@ -18,6 +18,7 @@ export default function Features() {
           >
             Feita para a <span className="gold-text">adoração</span>
           </h2>
+          <span aria-hidden className="blood-mark mt-6" />
         </Reveal>
 
         <div className="mt-14 grid gap-4 sm:grid-cols-2">

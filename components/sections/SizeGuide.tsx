@@ -20,6 +20,7 @@ export default function SizeGuide() {
             >
               Na dúvida, um abaixo
             </h2>
+            <span aria-hidden className="blood-mark mt-6" />
             <p className="mt-5 max-w-md text-sm leading-relaxed text-mute">
               Modelagem oversized: se quiser um caimento mais justo, considere um
               tamanho abaixo. Medidas em centímetros, peça plana.

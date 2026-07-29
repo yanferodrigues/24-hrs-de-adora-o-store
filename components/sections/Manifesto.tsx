@@ -25,6 +25,9 @@ export default function Manifesto() {
             <span className="gold-text">lembrete</span>: o Rei está voltando.
           </p>
         </Reveal>
+        <Reveal delay={0.09}>
+          <span aria-hidden className="blood-mark mx-auto mt-8" />
+        </Reveal>
         <Reveal delay={0.12}>
           <p className="mx-auto mt-8 max-w-xl text-[15px] leading-relaxed text-mute">
             &ldquo;Vi o céu aberto, e eis um cavalo branco. Aquele que estava
