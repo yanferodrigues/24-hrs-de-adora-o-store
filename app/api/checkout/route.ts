@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 import { isValidName, normalizeName } from "@/lib/auth-validation";
+import { FITS, MAX_QTY_POR_ITEM, PRODUCT } from "@/lib/data";
 
 /**
  * Cria um pagamento Pix no Mercado Pago quando MP_ACCESS_TOKEN estiver definido.
@@ -11,19 +12,56 @@ import { isValidName, normalizeName } from "@/lib/auth-validation";
  * Retorna o QR Code (imagem base64) e o "copia e cola" para exibir no próprio site.
  */
 
-interface CartItem {
+/**
+ * O corpo vem do navegador, então nada aqui é confiável — nem o `price` que o
+ * carrinho manda junto (ele existe só para a UI somar o subtotal). Tratamos
+ * cada campo como texto cru e resolvemos versão/corte/tamanho/preço contra o
+ * catálogo de `lib/data.ts` antes de falar com o Mercado Pago.
+ */
+interface RawCartItem {
+  version?: unknown;
+  fit?: unknown;
+  size?: unknown;
+  qty?: unknown;
+}
+
+interface ValidItem {
   version: string;
-  fit?: string;
+  fit: string;
   size: string;
   qty: number;
   price: number;
+}
+
+/** Única versão do produto — o carrinho não deveria mandar outra coisa. */
+const VERSION = "Preta";
+
+/**
+ * Devolve o item já normalizado a partir do catálogo, ou `null` se qualquer
+ * campo não existir na loja. O preço vem SEMPRE de `FITS`: é isso que impede
+ * alguém de editar o corpo do POST e comprar a camiseta por R$ 1.
+ */
+function validateItem(raw: RawCartItem): ValidItem | null {
+  if (raw?.version !== VERSION) return null;
+
+  const fit = FITS.find((f) => f.id === raw?.fit);
+  if (!fit) return null;
+
+  const size = PRODUCT.sizes.find((s) => s === raw?.size);
+  if (!size) return null;
+
+  const qty = raw?.qty;
+  if (typeof qty !== "number" || !Number.isInteger(qty)) return null;
+  if (qty < 1 || qty > MAX_QTY_POR_ITEM) return null;
+
+  return { version: VERSION, fit: fit.id, size, qty, price: fit.price };
 }
 
 export async function POST(req: Request) {
   const key = process.env.MP_ACCESS_TOKEN;
 
   const { items, email, name } = (await req.json().catch(() => ({}))) as {
-    items?: CartItem[];
+    items?: RawCartItem[];
     email?: string;
     name?: string;
   };
@@ -42,7 +80,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  if (!items?.length) {
+  if (!Array.isArray(items) || items.length === 0) {
     return NextResponse.json(
       { configured: true, error: "empty_cart" },
       { status: 400 }
@@ -63,10 +101,25 @@ export async function POST(req: Request) {
     );
   }
 
-  const total = items.reduce((n, i) => n + i.qty * i.price, 0);
+  // Preço e catálogo são decididos aqui, nunca pelo corpo do POST.
+  const validos: ValidItem[] = [];
+  for (const raw of items) {
+    const item = validateItem(raw);
+    if (!item) {
+      return NextResponse.json(
+        { configured: true, error: "invalid_items" },
+        { status: 400 }
+      );
+    }
+    validos.push(item);
+  }
+
+  const total = validos.reduce((n, i) => n + i.qty * i.price, 0);
   const comprador = normalizeName(name);
-  const description = items
-    .map((i) => `Camiseta ${i.version} ${i.fit ?? "Regular"} (${i.size}) x${i.qty}`)
+  // A descrição é o que reconcilia o pedido no painel do Mercado Pago, então
+  // ela também só usa valores já validados contra o catálogo.
+  const description = validos
+    .map((i) => `Camiseta ${i.version} ${i.fit} (${i.size}) x${i.qty}`)
     .join(" · ");
 
   // QR expira em 30 minutos.

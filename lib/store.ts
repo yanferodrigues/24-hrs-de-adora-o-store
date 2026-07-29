@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { MAX_QTY_POR_ITEM } from "@/lib/data";
 
 export type Version = "Preta";
 export type Fit = "Regular" | "Oversized";
@@ -57,18 +58,28 @@ export const useStore = create<StoreState>((set) => ({
     set((s) => {
       const id = `${item.version}-${item.fit}-${item.size}`;
       const existing = s.cart.find((c) => c.id === id);
+      // O teto vem de lib/data.ts, o mesmo que a API de checkout aplica.
       const cart = existing
         ? s.cart.map((c) =>
-            c.id === id ? { ...c, qty: c.qty + item.qty } : c
+            c.id === id
+              ? { ...c, qty: Math.min(MAX_QTY_POR_ITEM, c.qty + item.qty) }
+              : c
           )
-        : [...s.cart, { ...item, id }];
+        : [
+            ...s.cart,
+            { ...item, id, qty: Math.min(MAX_QTY_POR_ITEM, item.qty) },
+          ];
       return { cart, cartOpen: true };
     }),
   removeFromCart: (id) =>
     set((s) => ({ cart: s.cart.filter((c) => c.id !== id) })),
   setQty: (id, qty) =>
     set((s) => ({
-      cart: s.cart.map((c) => (c.id === id ? { ...c, qty: Math.max(1, qty) } : c)),
+      cart: s.cart.map((c) =>
+        c.id === id
+          ? { ...c, qty: Math.min(MAX_QTY_POR_ITEM, Math.max(1, qty)) }
+          : c
+      ),
     })),
   clearCart: () => set({ cart: [] }),
 }));

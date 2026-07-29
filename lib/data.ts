@@ -10,6 +10,13 @@ export const PRODUCT = {
   sizes: ["P", "M", "G", "GG", "XG"],
 };
 
+/**
+ * Teto de unidades por item. Vive aqui para o carrinho e a API de checkout
+ * usarem o mesmo número: se a UI deixasse pedir mais do que o servidor aceita,
+ * a pessoa só descobriria o limite na hora de pagar.
+ */
+export const MAX_QTY_POR_ITEM = 10;
+
 // Corte: Regular (base) e Oversized (mais amplo, +R$20)
 export const FITS = [
   { id: "Regular", label: "Regular", price: 80 },
