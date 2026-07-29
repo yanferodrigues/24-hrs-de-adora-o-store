@@ -162,7 +162,11 @@ export default function CartDrawer() {
     if (step === "pago") {
       setStep("cart");
       setPix(null);
-      setEmail("");
+      // volta para os dados da conta (não para vazio): com o preenchimento
+      // automático, uma segunda compra na mesma sessão deve começar já
+      // preenchida, como a primeira — e não obrigar a pessoa a redigitar.
+      setNome(user?.name ?? "");
+      setEmail(user?.email ?? "");
     }
   }
 
