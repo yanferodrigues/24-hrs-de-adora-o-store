@@ -91,7 +91,7 @@ export default function AuthPanel({
           return;
         }
         if (error) {
-          setErro(error.status === 429 ? MSG.tentativas : error.message);
+          setErro(error.status === 429 ? MSG.tentativas : MSG.cadastro);
           return;
         }
       } else {

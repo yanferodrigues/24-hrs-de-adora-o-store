@@ -13,6 +13,7 @@ export const MSG = {
   oauth:
     "Não foi possível entrar com o Google. Tente de novo ou use e-mail e senha.",
   rede: "Falha de conexão. Tente novamente.",
+  cadastro: "Não foi possível criar a conta. Confira os dados e tente de novo.",
 } as const;
 
 export function normalizeEmail(raw: string): string {
