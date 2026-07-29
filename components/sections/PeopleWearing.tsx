@@ -39,7 +39,7 @@ export default function PeopleWearing() {
             Quem já está com ela
           </h2>
           <p className="mt-4 max-w-md text-[15px] leading-relaxed text-mute">
-            A peça no corpo — na rua, no ensaio, no congresso.
+            A peça no corpo
           </p>
         </Reveal>
 

@@ -73,7 +73,7 @@ export default function Hero() {
         className="mx-auto mt-5 max-w-md text-[15px] leading-relaxed text-mute"
       >
         A camiseta oficial do congresso. O Rei no cavalo branco —{" "}
-        <span className="text-parchment">o Rei está voltando</span>. Estampa
+        <span className="text-parchment">Voltará</span>. Estampa
         dourada em algodão premium, edição limitada.
       </motion.p>
 

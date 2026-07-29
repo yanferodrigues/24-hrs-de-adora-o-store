@@ -16,7 +16,7 @@ export default function Features() {
             className="display max-w-2xl text-parchment"
             style={{ fontSize: "clamp(2rem,5.5vw,3.6rem)", lineHeight: 1.04 }}
           >
-            Feita para durar a vigília inteira
+            Feita para a <span className="gold-text">adoração</span>
           </h2>
         </Reveal>
 

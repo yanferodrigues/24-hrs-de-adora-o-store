@@ -37,7 +37,7 @@ export default function ArtReveal() {
               className="display text-parchment"
               style={{ fontSize: "clamp(2.1rem,5.5vw,4rem)", lineHeight: 1.02 }}
             >
-              A cena da <span className="gold-text">volta</span> do Rei
+              A <span className="gold-text">volta</span> do Rei <span className="gold-text">Jesus</span>
             </h2>
           </Reveal>
 
