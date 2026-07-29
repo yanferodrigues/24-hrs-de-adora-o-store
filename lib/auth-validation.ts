@@ -49,13 +49,18 @@ export function safeNext(
   fallback = "/produto"
 ): string {
   if (!raw) return fallback;
-  if (!raw.startsWith("/")) return fallback;
-  // Barra invertida importa tanto quanto barra normal: o parser de URL (padrão
-  // WHATWG, usado por `new URL`, pelo navegador e pelo `redirect()` do Next)
-  // converte "\" em "/" antes de resolver o endereço. Ou seja,
-  // `new URL("/\\site-malicioso.com", "https://nossa-loja.com").href` resulta em
-  // "https://site-malicioso.com/" — exatamente o mesmo escape de domínio de
-  // "//site-malicioso.com". Por isso rejeitamos os dois na segunda posição.
-  if (raw[1] === "/" || raw[1] === "\\") return fallback;
-  return raw;
+
+  // Em vez de tentar adivinhar todas as formas de escapar do nosso domínio
+  // (`//host`, `/\host`, `/<tab>/host`, e as que ainda não conhecemos), deixamos
+  // o próprio parser de URL decidir — o mesmo que o navegador e o Next usam.
+  // Resolvemos contra uma base sentinela: se a origem mudar, o caminho apontava
+  // para fora e é descartado. Só devolvemos o que sobra do lado de cá.
+  const BASE = "https://sentinela.invalid";
+  try {
+    const url = new URL(raw, BASE);
+    if (url.origin !== BASE) return fallback;
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return fallback;
+  }
 }

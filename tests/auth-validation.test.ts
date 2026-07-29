@@ -55,8 +55,17 @@ test("safeNext recusa barra invertida (o parser de URL a trata como barra)", () 
   assert.equal(safeNext("/\\\\site-malicioso.com"), "/produto");
   assert.equal(safeNext("/\\site-malicioso.com", "/login"), "/login");
   // caminho interno com barra invertida mais adiante continua passando:
-  // só a segunda posição decide o domínio de destino
-  assert.equal(safeNext("/produto/a\\b"), "/produto/a\\b");
+  // o parser normaliza "\" para "/" no meio do caminho, mas isso não muda
+  // de domínio — segue sendo um caminho interno, só que com "/" no lugar de "\"
+  assert.equal(safeNext("/produto/a\\b"), "/produto/a/b");
+});
+
+test("safeNext recusa tab/LF/CR em qualquer posição (o parser WHATWG os remove antes de resolver)", () => {
+  // `/\t/evil.com` — sem o tab, vira `//evil.com`: escape de domínio
+  assert.equal(safeNext("/\t/evil.com"), "/produto");
+  assert.equal(safeNext("/\n/evil.com"), "/produto");
+  assert.equal(safeNext("/\r/evil.com"), "/produto");
+  assert.equal(safeNext("/\t\t//evil.com"), "/produto");
 });
 
 test("safeNext: o que ele barra realmente não sai do domínio", () => {
@@ -66,6 +75,10 @@ test("safeNext: o que ele barra realmente não sai do domínio", () => {
     "/\\site-malicioso.com",
     "/\\\\site-malicioso.com",
     "https://site-malicioso.com",
+    "/\t/evil.com",
+    "/\n/evil.com",
+    "/\r/evil.com",
+    "/\t\t//evil.com",
   ]) {
     // prova de que a entrada crua escaparia...
     assert.notEqual(new URL(entrada, origem).origin, origem);
