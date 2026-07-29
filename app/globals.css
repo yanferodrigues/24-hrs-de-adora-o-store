@@ -57,6 +57,30 @@ body {
   color: #ffffff;
 }
 
+/* ---- barra de rolagem em sangue ----
+   Fica ao lado do conteúdo a página inteira, então é o elemento vermelho
+   mais constante do site — mesma cor do traço da estampa. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--blood) var(--void-3);
+}
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+::-webkit-scrollbar-track {
+  background: var(--void-3);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--blood);
+  border-radius: 999px;
+  /* a borda na cor do trilho afina o polegar sem encostar nas bordas */
+  border: 3px solid var(--void-3);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--blood-lite);
+}
+
 /* ---- camadas utilitárias ---- */
 @layer components {
   .wrap {

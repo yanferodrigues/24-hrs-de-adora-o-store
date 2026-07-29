@@ -22,7 +22,7 @@ export default function Topbar() {
           left: 0,
           height: 2,
           width: `${progress * 100}%`,
-          background: "var(--accent)",
+          background: "var(--blood)",
           zIndex: 71,
           transition: "width .1s linear",
         }}
