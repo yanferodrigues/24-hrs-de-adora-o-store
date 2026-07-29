@@ -37,7 +37,21 @@ export async function updateSession(
   // falsificável. getUser valida contra o servidor do Supabase.
   const {
     data: { user },
+    error,
   } = await supabase.auth.getUser();
+
+  // Sem sessão, `getUser()` também devolve erro — isso é rotina e não vira log.
+  // O que interessa é o resto: projeto Supabase hibernado, chave errada, rede
+  // caída. Nesses casos todo mundo é mandado para /login sem nenhuma pista de
+  // por quê, e durante o evento esta linha é o que distingue "a pessoa não
+  // está logada" de "o Supabase está fora do ar".
+  if (error && error.name !== "AuthSessionMissingError") {
+    console.error(
+      "[auth] getUser falhou no middleware:",
+      error.status ?? "",
+      error.message
+    );
+  }
 
   return { response, user };
 }
