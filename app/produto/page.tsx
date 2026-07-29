@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Minus, Plus, Truck, ShieldCheck, type LucideIcon } from "lucide-react";
 import ShopHeader from "@/components/shop/ShopHeader";
 import CartDrawer from "@/components/shop/CartDrawer";
-import { PRODUCT, FITS } from "@/lib/data";
+import { PRODUCT, FITS, MAX_QTY_POR_ITEM } from "@/lib/data";
 import { useStore, type Fit } from "@/lib/store";
 
 type View = "frente" | "costas";
@@ -16,13 +16,34 @@ const VIEWS: { id: View; label: string; src: string }[] = [
 
 export default function ProdutoPage() {
   const addToCart = useStore((s) => s.addToCart);
+  const cart = useStore((s) => s.cart);
 
   const [size, setSize] = useState<string>("M");
   const [qty, setQty] = useState(1);
   const [view, setView] = useState<View>("frente");
   const [fit, setFit] = useState<Fit>("Regular");
+  const [addWarning, setAddWarning] = useState<string | null>(null);
 
   const unitPrice = FITS.find((f) => f.id === fit)?.price ?? PRODUCT.price;
+
+  // Quantas unidades desse corte+tamanho já estão no carrinho — o teto vale
+  // para a soma, não só para o que está sendo adicionado agora.
+  const cartId = `Preta-${fit}-${size}`;
+  const alreadyInCart = cart.find((c) => c.id === cartId)?.qty ?? 0;
+  const wouldExceedCap = alreadyInCart + qty > MAX_QTY_POR_ITEM;
+
+  function handleAddToCart() {
+    if (wouldExceedCap) {
+      setAddWarning(
+        alreadyInCart > 0
+          ? `Você já tem ${alreadyInCart} nesse tamanho no carrinho — máximo de ${MAX_QTY_POR_ITEM} por tamanho.`
+          : `Máximo de ${MAX_QTY_POR_ITEM} por tamanho.`
+      );
+    } else {
+      setAddWarning(null);
+    }
+    addToCart({ version: "Preta", fit, size, qty, price: unitPrice });
+  }
 
   return (
     <div className="min-h-screen" style={{ background: "var(--bg)" }}>
@@ -153,7 +174,10 @@ export default function ProdutoPage() {
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
             <div className="flex items-center gap-4 rounded-full border border-line px-3 py-2">
               <button
-                onClick={() => setQty((q) => Math.max(1, q - 1))}
+                onClick={() => {
+                  setQty((q) => Math.max(1, q - 1));
+                  setAddWarning(null);
+                }}
                 aria-label="Diminuir"
                 className="text-mute transition-colors hover:text-ink"
               >
@@ -163,23 +187,28 @@ export default function ProdutoPage() {
                 {qty}
               </span>
               <button
-                onClick={() => setQty((q) => q + 1)}
+                onClick={() => {
+                  setQty((q) => Math.min(MAX_QTY_POR_ITEM, q + 1));
+                  setAddWarning(null);
+                }}
+                disabled={qty >= MAX_QTY_POR_ITEM}
                 aria-label="Aumentar"
-                className="text-mute transition-colors hover:text-ink"
+                className="text-mute transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:text-mute"
               >
                 <Plus size={16} />
               </button>
             </div>
 
-            <button
-              onClick={() =>
-                addToCart({ version: "Preta", fit, size, qty, price: unitPrice })
-              }
-              className="btn-magnetic flex-1"
-            >
+            <button onClick={handleAddToCart} className="btn-magnetic flex-1">
               Adicionar ao carrinho · R$ {qty * unitPrice}
             </button>
           </div>
+
+          {(qty >= MAX_QTY_POR_ITEM || addWarning) && (
+            <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-mute-2">
+              {addWarning ?? `Máximo de ${MAX_QTY_POR_ITEM} por tamanho.`}
+            </p>
+          )}
 
           {/* Trust */}
           <div className="mt-10 grid gap-4 border-t border-line pt-8 sm:grid-cols-3">

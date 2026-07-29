@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/lib/store";
 import { isValidName, normalizeName } from "@/lib/auth-validation";
+import { MAX_QTY_POR_ITEM } from "@/lib/data";
 
 type Step = "cart" | "pix" | "pago";
 
@@ -389,8 +390,9 @@ export default function CartDrawer() {
                             </span>
                             <button
                               onClick={() => setQty(item.id, item.qty + 1)}
+                              disabled={item.qty >= MAX_QTY_POR_ITEM}
                               aria-label="Aumentar"
-                              className="text-mute transition-colors hover:text-ink"
+                              className="text-mute transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:text-mute"
                             >
                               <Plus size={13} />
                             </button>
@@ -399,6 +401,11 @@ export default function CartDrawer() {
                             R$ {item.qty * item.price}
                           </span>
                         </div>
+                        {item.qty >= MAX_QTY_POR_ITEM && (
+                          <div className="pt-1 font-mono text-[10px] uppercase tracking-wider text-mute-2">
+                            Máximo de {MAX_QTY_POR_ITEM} por tamanho
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
