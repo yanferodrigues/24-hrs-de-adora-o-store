@@ -14,6 +14,8 @@ export const MSG = {
     "Não foi possível entrar com o Google. Tente de novo ou use e-mail e senha.",
   rede: "Falha de conexão. Tente novamente.",
   cadastro: "Não foi possível criar a conta. Confira os dados e tente de novo.",
+  novaSenha:
+    "Não foi possível salvar a senha. O link pode ter expirado — peça um novo em \"Esqueci minha senha\".",
 } as const;
 
 export function normalizeEmail(raw: string): string {

@@ -52,25 +52,30 @@ async function main() {
   checar("...e a tela traz o formulario", html.includes("type=\"password\""),
     "nao encontrou campo de senha no HTML");
 
-  // 5. A tela de cadastro precisa abrir sem sessão, com o campo de nome.
+  // 5. A tela de cadastro precisa abrir sem sessão.
   const cadastro = await fetch(`${BASE}/cadastro`, { redirect: "manual" });
-  const cadastroHtml = cadastro.status === 200 ? await cadastro.text() : "";
-  checar("GET /cadastro responde 200 e traz o campo de nome",
-    cadastro.status === 200 && cadastroHtml.includes('id="nome"'),
-    `status ${cadastro.status}, id="nome" ${cadastroHtml.includes('id="nome"') ? "presente" : "ausente"}`);
+  checar("GET /cadastro responde 200", cadastro.status === 200,
+    `recebeu ${cadastro.status}`);
+  const cadastroHtml = await cadastro.text();
+  checar("...e a tela traz o campo de nome", cadastroHtml.includes('id="nome"'),
+    "nao encontrou id=\"nome\" no HTML");
 
-  // 6. A tela de recuperar senha precisa abrir sem sessão, com o campo de e-mail.
+  // 6. A tela de recuperar senha precisa abrir sem sessão.
   const recuperar = await fetch(`${BASE}/recuperar-senha`, { redirect: "manual" });
-  const recuperarHtml = recuperar.status === 200 ? await recuperar.text() : "";
-  checar("GET /recuperar-senha responde 200 e traz o campo de e-mail",
-    recuperar.status === 200 && recuperarHtml.includes('id="email"'),
-    `status ${recuperar.status}, id="email" ${recuperarHtml.includes('id="email"') ? "presente" : "ausente"}`);
+  checar("GET /recuperar-senha responde 200", recuperar.status === 200,
+    `recebeu ${recuperar.status}`);
+  const recuperarHtml = await recuperar.text();
+  checar("...e a tela traz o campo de e-mail", recuperarHtml.includes('id="email"'),
+    "nao encontrou id=\"email\" no HTML");
 
   // 7. /nova-senha sem sessão redireciona para /recuperar-senha.
   const novaSenha = await fetch(`${BASE}/nova-senha`, { redirect: "manual" });
+  const novaSenhaLocal = novaSenha.headers.get("location") ?? "";
   checar("GET /nova-senha sem sessao redireciona",
     novaSenha.status === 307 || novaSenha.status === 302,
     `recebeu ${novaSenha.status}`);
+  checar("...e o destino e /recuperar-senha", novaSenhaLocal.includes("/recuperar-senha"),
+    `location = ${novaSenhaLocal || "(vazio)"}`);
 
   console.log(falhas === 0 ? "\nTudo certo." : `\n${falhas} falha(s).`);
   process.exit(falhas === 0 ? 0 : 1);

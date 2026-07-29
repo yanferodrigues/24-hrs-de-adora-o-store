@@ -25,7 +25,9 @@ export default function NovaSenhaForm() {
         password: senha,
       });
       if (error) {
-        setErro(error.message);
+        // Mensagem crua da API do Supabase (em inglês) nunca vai pra tela;
+        // a causa mais provável aqui é o link de recuperação ter expirado.
+        setErro(MSG.novaSenha);
         return;
       }
       router.replace("/produto");
