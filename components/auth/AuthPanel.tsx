@@ -83,15 +83,25 @@ export default function AuthPanel({
           options: { data: { name: normalizeName(nome) } },
         });
 
-        // O Supabase responde SUCESSO quando o e-mail já existe, para não
-        // deixar ninguém descobrir quais e-mails estão cadastrados. A única
-        // pista é a lista de identities vir vazia.
+        // O comportamento do Supabase para e-mail já cadastrado depende da
+        // config "Confirm email" no painel: com ela LIGADA, o Supabase
+        // responde SUCESSO (para não deixar ninguém descobrir quais e-mails
+        // já existem) e a única pista é `identities` vir vazia. Com ela
+        // DESLIGADA (nossa config atual), ele responde um erro explícito
+        // `user_already_exists`. Tratamos os dois caminhos para o aviso
+        // certo aparecer nas duas configurações.
         if (!error && data.user && data.user.identities?.length === 0) {
           setErro(MSG.emailEmUso);
           return;
         }
         if (error) {
-          setErro(error.status === 429 ? MSG.tentativas : MSG.cadastro);
+          if (error.status === 429) {
+            setErro(MSG.tentativas);
+          } else if (error.code === "user_already_exists") {
+            setErro(MSG.emailEmUso);
+          } else {
+            setErro(MSG.cadastro);
+          }
           return;
         }
       } else {
