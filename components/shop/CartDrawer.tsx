@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useStore } from "@/lib/store";
+import { isValidName, normalizeName } from "@/lib/auth-validation";
 
 type Step = "cart" | "pix" | "pago";
 
@@ -32,12 +33,14 @@ export default function CartDrawer() {
   const setQty = useStore((s) => s.setQty);
   const removeFromCart = useStore((s) => s.removeFromCart);
   const clearCart = useStore((s) => s.clearCart);
+  const user = useStore((s) => s.user);
 
   const subtotal = cart.reduce((n, c) => n + c.qty * c.price, 0);
   const count = cart.reduce((n, c) => n + c.qty, 0);
 
   const [step, setStep] = useState<Step>("cart");
   const [email, setEmail] = useState("");
+  const [nome, setNome] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pix, setPix] = useState<PixData | null>(null);
@@ -45,17 +48,27 @@ export default function CartDrawer() {
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const nomeOk = isValidName(nome);
+
+  // A sessão chega depois da primeira renderização (o SessionHydrator roda
+  // num efeito), então preenchemos quando ela aparece — sem nunca sobrescrever
+  // o que a pessoa já digitou.
+  useEffect(() => {
+    if (!user) return;
+    setNome((n) => n || user.name);
+    setEmail((e) => e || user.email);
+  }, [user]);
 
   // ---- Gera o pagamento Pix ----
   async function gerarPix() {
-    if (!emailOk || cart.length === 0) return;
+    if (!emailOk || !nomeOk || cart.length === 0) return;
     setLoading(true);
     setError(null);
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: cart, email }),
+        body: JSON.stringify({ items: cart, email, name: normalizeName(nome) }),
       });
       const data = await res.json();
 
@@ -339,6 +352,18 @@ export default function CartDrawer() {
                   </div>
 
                   <label className="mb-2 block font-mono text-[10px] uppercase tracking-wider text-mute-2">
+                    Nome de quem vai retirar
+                  </label>
+                  <input
+                    type="text"
+                    value={nome}
+                    onChange={(e) => setNome(e.target.value)}
+                    placeholder="Yan Felipe"
+                    autoComplete="name"
+                    className="mb-3 w-full rounded-lg border border-line bg-transparent px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-mute-2 focus:border-[var(--gold)]"
+                  />
+
+                  <label className="mb-2 block font-mono text-[10px] uppercase tracking-wider text-mute-2">
                     Seu e-mail (para o comprovante)
                   </label>
                   <input
@@ -356,7 +381,7 @@ export default function CartDrawer() {
 
                   <button
                     onClick={gerarPix}
-                    disabled={!emailOk || loading}
+                    disabled={!emailOk || !nomeOk || loading}
                     className="btn-magnetic flex w-full items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {loading ? (

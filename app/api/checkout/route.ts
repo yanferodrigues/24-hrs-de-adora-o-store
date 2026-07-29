@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
+import { createClient } from "@/lib/supabase/server";
+import { isValidName, normalizeName } from "@/lib/auth-validation";
 
 /**
  * Cria um pagamento Pix no Mercado Pago quando MP_ACCESS_TOKEN estiver definido.
@@ -20,13 +22,24 @@ interface CartItem {
 export async function POST(req: Request) {
   const key = process.env.MP_ACCESS_TOKEN;
 
-  const { items, email } = (await req.json().catch(() => ({}))) as {
+  const { items, email, name } = (await req.json().catch(() => ({}))) as {
     items?: CartItem[];
     email?: string;
+    name?: string;
   };
 
   if (!key) {
     return NextResponse.json({ configured: false });
+  }
+
+  // O middleware já bloqueia esta rota, mas confirmamos aqui também: é a
+  // única garantia se o matcher for mexido por engano no futuro.
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
   if (!items?.length) {
@@ -43,7 +56,15 @@ export async function POST(req: Request) {
     );
   }
 
+  if (!name || !isValidName(name)) {
+    return NextResponse.json(
+      { configured: true, error: "invalid_name" },
+      { status: 400 }
+    );
+  }
+
   const total = items.reduce((n, i) => n + i.qty * i.price, 0);
+  const comprador = normalizeName(name);
   const description = items
     .map((i) => `Camiseta ${i.version} ${i.fit ?? "Regular"} (${i.size}) x${i.qty}`)
     .join(" · ");
@@ -61,8 +82,8 @@ export async function POST(req: Request) {
     body: JSON.stringify({
       transaction_amount: total,
       payment_method_id: "pix",
-      description: `${description} · 24 Horas de Adoração`,
-      payer: { email },
+      description: `${comprador} · ${description} · 24 Horas de Adoração`,
+      payer: { email, first_name: comprador },
       date_of_expiration: expiration,
     }),
   });
