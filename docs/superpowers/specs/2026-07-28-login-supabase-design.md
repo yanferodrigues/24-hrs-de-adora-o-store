@@ -149,22 +149,42 @@ redirect assinado pelo nosso domínio.
 
 Falha na troca → redireciona para `/login?erro=oauth`.
 
-### E-mail já cadastrado — a pegadinha do `signUp`
+### E-mail já cadastrado — dois comportamentos, não um
 
-Para não permitir descobrir quais e-mails existem, o Supabase **responde sucesso**
-quando alguém tenta cadastrar um e-mail já usado. O usuário não é criado, mas a
-chamada não dá erro.
+**Corrigido em 29/07/2026 após verificação empírica contra a API real.** A versão
+anterior deste spec descrevia só o primeiro caso abaixo, e teria produzido a
+mensagem errada na tela.
 
-A forma de detectar é olhar o retorno:
+O comportamento do `signUp` **depende da configuração "Confirm email"** do painel:
+
+| "Confirm email" | O que o Supabase faz com e-mail repetido |
+|---|---|
+| **Ligado** | Responde **sucesso disfarçado** — para ninguém descobrir quais e-mails existem. O usuário não é criado, mas não há erro. A única pista é `data.user.identities` vir como lista vazia. |
+| **Desligado** (nossa configuração) | Responde **HTTP 422** com `error_code: "user_already_exists"`, que o cliente JS expõe como `error.code`. |
+
+Faz sentido: a proteção contra enumeração só existe quando há e-mail de
+confirmação para enviar no lugar do erro. Sem ele, o Supabase erra direto.
+
+Como desligamos a confirmação, o caso real é o segundo — mas o código trata os
+dois, porque religar "Confirm email" no painel muda o comportamento sem tocar em
+uma linha do nosso código:
 
 ```ts
-if (data.user && data.user.identities?.length === 0) {
-  // e-mail já tem conta
+// depois do signUp
+if (!error && data.user && data.user.identities?.length === 0) {
+  // "Confirm email" ligado: sucesso disfarçado
+  setErro(MSG.emailEmUso);
+  return;
+}
+if (error) {
+  if (error.status === 429) setErro(MSG.tentativas);
+  else if (error.code === "user_already_exists") setErro(MSG.emailEmUso);
+  else setErro(MSG.cadastro);
+  return;
 }
 ```
 
-Sem esse teste, a tela diria "conta criada" e a pessoa nunca conseguiria entrar.
-É o ponto mais fácil de errar nesta implementação.
+Continua sendo o ponto mais fácil de errar nesta implementação.
 
 ## O gate
 

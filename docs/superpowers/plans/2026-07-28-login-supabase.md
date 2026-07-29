@@ -1200,7 +1200,7 @@ Abrir `http://localhost:3000/cadastro`, preencher nome, um e-mail novo e uma sen
 
 Esperado: cria a conta e cai em `/produto`, já com o primeiro nome aparecendo no header.
 
-Se "Confirm email" ainda estiver ligado no painel do Supabase, o cadastro é criado mas **não** loga — a pessoa fica presa esperando o e-mail. É o item pendente das Global Constraints.
+Se o cadastro for criado mas **não** logar, a pessoa ficou presa esperando um e-mail de confirmação — sinal de que "Confirm email" voltou a ficar ligado no painel. Foi verificado desligado em 28/07/2026, então isso indicaria alguém ter mexido na configuração.
 
 - [ ] **Step 3: Testar a pegadinha do e-mail repetido**
 
