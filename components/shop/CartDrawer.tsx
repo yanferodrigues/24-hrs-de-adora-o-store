@@ -15,6 +15,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useStore } from "@/lib/store";
 import { isValidName, normalizeName } from "@/lib/auth-validation";
 
@@ -34,6 +35,8 @@ export default function CartDrawer() {
   const removeFromCart = useStore((s) => s.removeFromCart);
   const clearCart = useStore((s) => s.clearCart);
   const user = useStore((s) => s.user);
+  const setUser = useStore((s) => s.setUser);
+  const router = useRouter();
 
   const subtotal = cart.reduce((n, c) => n + c.qty * c.price, 0);
   const count = cart.reduce((n, c) => n + c.qty, 0);
@@ -70,11 +73,32 @@ export default function CartDrawer() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ items: cart, email, name: normalizeName(nome) }),
       });
+
+      // Sessão morta (aba antiga, logout em outro aparelho): a API responde 401
+      // e insistir no formulário não resolve. Limpamos o usuário do store — o
+      // cabeçalho ainda mostrava o nome de quem já não está logado — e mandamos
+      // para o login, que volta para o produto depois.
+      if (res.status === 401) {
+        setUser(null);
+        setError("Sua sessão expirou. Entre de novo para concluir a compra.");
+        setOpen(false);
+        router.replace("/login?next=/produto");
+        return;
+      }
+
       const data = await res.json();
 
       if (data.configured === false) {
         setError(
           "O pagamento ainda está sendo configurado. Tente novamente em breve."
+        );
+        return;
+      }
+      // O servidor recalcula preço e catálogo por conta própria; se ele recusou
+      // os itens, mandar conferir o e-mail só confundiria.
+      if (data.error === "invalid_items") {
+        setError(
+          "Algum item do carrinho não é mais válido. Remova e adicione de novo."
         );
         return;
       }
@@ -105,6 +129,20 @@ export default function CartDrawer() {
         const res = await fetch(`/api/checkout/status?id=${pix.paymentId}`, {
           cache: "no-store",
         });
+
+        // Sessão caiu no meio da espera. Sem este ramo o polling giraria para
+        // sempre em "Aguardando pagamento…" mesmo com o Pix já pago, porque
+        // `data.status` viria indefinido. Paramos e avisamos — sem dizer que
+        // falhou: o dinheiro pode ter entrado.
+        if (res.status === 401) {
+          if (pollRef.current) clearInterval(pollRef.current);
+          setUser(null);
+          setError(
+            "Sua sessão expirou e não dá mais para acompanhar o pagamento por aqui. Se você já pagou, o Pix pode ter sido recebido — entre de novo e confira antes de pagar outra vez."
+          );
+          return;
+        }
+
         const data = await res.json();
         if (data.status === "approved") {
           setStep("pago");
@@ -121,7 +159,7 @@ export default function CartDrawer() {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
     };
-  }, [step, pix]);
+  }, [step, pix, setUser]);
 
   // ---- Ao entrar em "pago", esvazia o carrinho ----
   useEffect(() => {
@@ -256,15 +294,34 @@ export default function CartDrawer() {
                     </button>
                   </div>
 
-                  <div className="mt-6 flex items-center gap-2 text-mute-2">
-                    <Loader2 size={15} className="animate-spin" />
-                    <span className="font-mono text-[11px] uppercase tracking-wider">
-                      Aguardando pagamento…
-                    </span>
-                  </div>
-                  <p className="mt-4 font-mono text-[10px] uppercase tracking-wider text-mute-2">
-                    O código expira em 30 minutos
-                  </p>
+                  {error ? (
+                    /* a espera parou (ex.: sessão expirada) — o aviso substitui
+                       o "Aguardando pagamento…", que aqui seria mentira */
+                    <>
+                      <p className="mt-6 text-xs leading-relaxed text-blood-lite">
+                        {error}
+                      </p>
+                      <Link
+                        href="/login?next=/produto"
+                        onClick={() => setOpen(false)}
+                        className="mt-4 font-mono text-[11px] uppercase tracking-[0.16em] text-ink underline underline-offset-4"
+                      >
+                        Entrar de novo
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <div className="mt-6 flex items-center gap-2 text-mute-2">
+                        <Loader2 size={15} className="animate-spin" />
+                        <span className="font-mono text-[11px] uppercase tracking-wider">
+                          Aguardando pagamento…
+                        </span>
+                      </div>
+                      <p className="mt-4 font-mono text-[10px] uppercase tracking-wider text-mute-2">
+                        O código expira em 30 minutos
+                      </p>
+                    </>
+                  )}
 
                   <button
                     onClick={cancelarPix}
