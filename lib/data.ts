@@ -1,8 +1,8 @@
 export const PRODUCT = {
   brand: "24 Horas de Adoração",
   name: "Camiseta Oficial · Edição do Congresso",
-  price: 80, // preço base (corte Regular)
-  priceLabel: "R$ 80",
+  price: 85, // preço base (corte Regular)
+  priceLabel: "R$ 85",
   currency: "BRL",
   eventDate: "2026-10-15T00:00:00-03:00", // 15/10/2026
   eventDateLabel: "15 de outubro de 2026",
@@ -19,7 +19,7 @@ export const MAX_QTY_POR_ITEM = 10;
 
 // Corte: Regular (base) e Oversized (mais amplo, +R$20)
 export const FITS = [
-  { id: "Regular", label: "Regular", price: 80 },
+  { id: "Regular", label: "Regular", price: 85 },
   { id: "Oversized", label: "Oversized", price: 100 },
 ] as const;
 
