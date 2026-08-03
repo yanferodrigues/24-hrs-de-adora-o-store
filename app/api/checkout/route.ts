@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { createClient } from "@/lib/supabase/server";
-import { isValidName, normalizeName } from "@/lib/auth-validation";
+import {
+  isValidEmail,
+  isValidName,
+  isValidPhone,
+  normalizeEmail,
+  normalizeName,
+  normalizePhone,
+} from "@/lib/auth-validation";
 import { FITS, MAX_QTY_POR_ITEM, PRODUCT } from "@/lib/data";
 
 /**
@@ -60,10 +67,11 @@ function validateItem(raw: RawCartItem): ValidItem | null {
 export async function POST(req: Request) {
   const key = process.env.MP_ACCESS_TOKEN;
 
-  const { items, email, name } = (await req.json().catch(() => ({}))) as {
+  const { items, email, name, phone } = (await req.json().catch(() => ({}))) as {
     items?: RawCartItem[];
     email?: string;
     name?: string;
+    phone?: string;
   };
 
   if (!key) {
@@ -87,7 +95,7 @@ export async function POST(req: Request) {
     );
   }
 
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!email || !isValidEmail(email)) {
     return NextResponse.json(
       { configured: true, error: "invalid_email" },
       { status: 400 }
@@ -97,6 +105,15 @@ export async function POST(req: Request) {
   if (!name || !isValidName(name)) {
     return NextResponse.json(
       { configured: true, error: "invalid_name" },
+      { status: 400 }
+    );
+  }
+
+  // É esta recusa que "proíbe a compra" sem telefone. O botão desabilitado no
+  // carrinho é conveniência; quem chamar a API direto para aqui.
+  if (!phone || !isValidPhone(phone)) {
+    return NextResponse.json(
+      { configured: true, error: "invalid_phone" },
       { status: 400 }
     );
   }
@@ -116,6 +133,8 @@ export async function POST(req: Request) {
 
   const total = validos.reduce((n, i) => n + i.qty * i.price, 0);
   const comprador = normalizeName(name);
+  const contato = normalizeEmail(email);
+  const telefone = normalizePhone(phone);
   // A descrição é o que reconcilia o pedido no painel do Mercado Pago, então
   // ela também só usa valores já validados contra o catálogo.
   const description = validos
@@ -136,7 +155,14 @@ export async function POST(req: Request) {
       transaction_amount: total,
       payment_method_id: "pix",
       description: `${comprador} · ${description} · 24 Horas de Adoração`,
-      payer: { email, first_name: comprador },
+      payer: {
+        email: contato,
+        first_name: comprador,
+        phone: {
+          area_code: telefone.slice(0, 2),
+          number: telefone.slice(2),
+        },
+      },
       date_of_expiration: expiration,
     }),
   });

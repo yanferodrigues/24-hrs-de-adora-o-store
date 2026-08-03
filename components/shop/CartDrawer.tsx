@@ -17,7 +17,14 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/lib/store";
-import { isValidName, normalizeName } from "@/lib/auth-validation";
+import {
+  MSG,
+  formatPhone,
+  isValidName,
+  isValidPhone,
+  normalizeName,
+  normalizePhone,
+} from "@/lib/auth-validation";
 import { MAX_QTY_POR_ITEM } from "@/lib/data";
 
 type Step = "cart" | "pix" | "pago";
@@ -45,6 +52,7 @@ export default function CartDrawer() {
   const [step, setStep] = useState<Step>("cart");
   const [email, setEmail] = useState("");
   const [nome, setNome] = useState("");
+  const [tel, setTel] = useState(""); // sempre só dígitos
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pix, setPix] = useState<PixData | null>(null);
@@ -53,6 +61,7 @@ export default function CartDrawer() {
 
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const nomeOk = isValidName(nome);
+  const telOk = isValidPhone(tel);
 
   // A sessão chega depois da primeira renderização (o SessionHydrator roda
   // num efeito), então preenchemos quando ela aparece — sem nunca sobrescrever
@@ -65,14 +74,19 @@ export default function CartDrawer() {
 
   // ---- Gera o pagamento Pix ----
   async function gerarPix() {
-    if (!emailOk || !nomeOk || cart.length === 0) return;
+    if (!emailOk || !nomeOk || !telOk || cart.length === 0) return;
     setLoading(true);
     setError(null);
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: cart, email, name: normalizeName(nome) }),
+        body: JSON.stringify({
+          items: cart,
+          email,
+          name: normalizeName(nome),
+          phone: tel,
+        }),
       });
 
       // Sessão morta (aba antiga, logout em outro aparelho): a API responde 401
@@ -101,6 +115,10 @@ export default function CartDrawer() {
         setError(
           "Algum item do carrinho não é mais válido. Remova e adicione de novo."
         );
+        return;
+      }
+      if (data.error === "invalid_phone") {
+        setError(MSG.telefone);
         return;
       }
       if (!res.ok || !data.qrCode) {
@@ -206,6 +224,9 @@ export default function CartDrawer() {
       // preenchida, como a primeira — e não obrigar a pessoa a redigitar.
       setNome(user?.name ?? "");
       setEmail(user?.email ?? "");
+      // Telefone não tem valor de conta para onde voltar: ele não vive no
+      // user_metadata. O autocomplete do navegador cobre a recompra.
+      setTel("");
     }
   }
 
@@ -443,13 +464,34 @@ export default function CartDrawer() {
                     className="mb-3 w-full rounded-lg border border-line bg-transparent px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-mute-2 focus:border-[var(--ink)]"
                   />
 
+                  <label className="mb-2 block font-mono text-[10px] uppercase tracking-wider text-mute-2">
+                    Seu telefone (WhatsApp)
+                  </label>
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    value={formatPhone(tel)}
+                    onChange={(e) => setTel(normalizePhone(e.target.value))}
+                    placeholder="(11) 91234-5678"
+                    autoComplete="tel"
+                    className="mb-1 w-full rounded-lg border border-line bg-transparent px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-mute-2 focus:border-[var(--ink)]"
+                  />
+                  {/* Só avisa quem digitou algo errado. Campo vazio não recebe
+                      alerta: brigar com um campo que ninguém tocou é ruído. */}
+                  <p
+                    className="mb-3 text-[11px]"
+                    style={{ color: "var(--blood-lite)" }}
+                  >
+                    {tel.length > 0 && !telOk ? MSG.telefone : " "}
+                  </p>
+
                   {error && (
                     <p className="mb-3 text-center text-xs text-red-500">{error}</p>
                   )}
 
                   <button
                     onClick={gerarPix}
-                    disabled={!emailOk || !nomeOk || loading}
+                    disabled={!emailOk || !nomeOk || !telOk || loading}
                     className="btn-magnetic flex w-full items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {loading ? (
