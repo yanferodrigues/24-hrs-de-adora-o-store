@@ -168,6 +168,17 @@ export default function CartDrawer() {
           return;
         }
 
+        // O pagamento não é desta conta (ou a linha do pedido não existe).
+        // Sem este ramo o polling giraria para sempre, porque `data.status`
+        // viria indefinido.
+        if (res.status === 404) {
+          if (pollRef.current) clearInterval(pollRef.current);
+          setError(
+            "Não conseguimos acompanhar este pagamento por aqui. Se você já pagou, confira antes de pagar de novo."
+          );
+          return;
+        }
+
         const data = await res.json();
         if (data.status === "approved") {
           setStep("pago");

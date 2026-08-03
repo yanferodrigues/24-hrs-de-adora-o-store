@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
  * Cancela um pagamento Pix pendente no Mercado Pago (quando o cliente desiste).
@@ -16,11 +17,7 @@ export async function POST(req: Request) {
 
   // O middleware já bloqueia esta rota, mas confirmamos aqui também: é a
   // única garantia se o matcher for mexido por engano no futuro.
-  //
-  // LIMITAÇÃO CONHECIDA: só sabemos que existe *alguém* logado, não que este
-  // pagamento seja dele. Amarrar o paymentId ao usuário exige persistência de
-  // pedidos (um banco), que ainda não temos — enquanto isso, qualquer pessoa
-  // logada consegue cancelar um Pix pendente cujo id ela adivinhe.
+  // A posse do pagamento é conferida logo abaixo, contra a tabela `pedidos`.
   const supabase = createClient();
   const {
     data: { user },
@@ -34,6 +31,20 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "missing_id" }, { status: 400 });
   }
 
+  // Só o dono cancela. Antes da tabela `pedidos` isso era impossível de
+  // verificar, e qualquer pessoa logada derrubava um Pix cujo id adivinhasse.
+  const admin = createAdminClient();
+  const { data: linhas } = await admin
+    .from("pedidos")
+    .select("id")
+    .eq("payment_id", String(id))
+    .eq("user_id", user.id)
+    .limit(1);
+
+  if (!linhas || linhas.length === 0) {
+    return NextResponse.json({ error: "not_found" }, { status: 404 });
+  }
+
   const resp = await fetch(`https://api.mercadopago.com/v1/payments/${id}`, {
     method: "PUT",
     headers: {
@@ -42,6 +53,16 @@ export async function POST(req: Request) {
     },
     body: JSON.stringify({ status: "cancelled" }),
   });
+
+  if (resp.ok) {
+    const { error } = await admin
+      .from("pedidos")
+      .update({ status: "cancelled" })
+      .eq("payment_id", String(id));
+    if (error) {
+      console.error("[cancel] falha ao marcar cancelado:", error.message);
+    }
+  }
 
   return NextResponse.json({ ok: resp.ok });
 }

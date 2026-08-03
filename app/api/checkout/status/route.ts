@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
  * Consulta o status de um pagamento no Mercado Pago (usado pelo polling do front).
@@ -16,11 +17,7 @@ export async function GET(req: Request) {
 
   // O middleware já bloqueia esta rota, mas confirmamos aqui também: é a
   // única garantia se o matcher for mexido por engano no futuro.
-  //
-  // LIMITAÇÃO CONHECIDA: só sabemos que existe *alguém* logado, não que este
-  // pagamento seja dele. Amarrar o paymentId ao usuário exige persistência de
-  // pedidos (um banco), que ainda não temos — enquanto isso, qualquer pessoa
-  // logada consegue ler o status de um pagamento cujo id ela adivinhe.
+  // A posse do pagamento é conferida logo abaixo, contra a tabela `pedidos`.
   const supabase = createClient();
   const {
     data: { user },
@@ -34,6 +31,21 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "missing_id" }, { status: 400 });
   }
 
+  // Agora existe vínculo pagamento→usuário, então conferimos a posse. Sem
+  // isso, qualquer pessoa logada leria o status de um pagamento cujo id ela
+  // adivinhasse.
+  const admin = createAdminClient();
+  const { data: linhas } = await admin
+    .from("pedidos")
+    .select("id")
+    .eq("payment_id", String(id))
+    .eq("user_id", user.id)
+    .limit(1);
+
+  if (!linhas || linhas.length === 0) {
+    return NextResponse.json({ error: "not_found" }, { status: 404 });
+  }
+
   const resp = await fetch(`https://api.mercadopago.com/v1/payments/${id}`, {
     headers: { Authorization: `Bearer ${key}` },
     cache: "no-store",
@@ -44,5 +56,18 @@ export async function GET(req: Request) {
   }
 
   const payment = await resp.json();
+
+  // Guarda o desfecho: é o que faz a tela do admin sair de "Pendente" sem
+  // depender de ninguém clicar em sincronizar.
+  if (payment?.status && payment.status !== "pending") {
+    const { error } = await admin
+      .from("pedidos")
+      .update({ status: payment.status })
+      .eq("payment_id", String(id));
+    if (error) {
+      console.error("[status] falha ao atualizar o pedido:", error.message);
+    }
+  }
+
   return NextResponse.json({ status: payment.status });
 }
