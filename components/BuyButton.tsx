@@ -27,7 +27,7 @@ export default function BuyButton({
       <ArrowUpRight size={16} />
       <span>
         {label}
-        {showPrice ? " · R$ 80" : ""}
+        {showPrice ? " · R$ 90" : ""}
       </span>
     </button>
   );

@@ -35,7 +35,7 @@ export default function StickyBuyBar() {
             <div className="truncate font-mono text-[10px] uppercase tracking-[0.18em] text-mute-2">
               Camiseta Preta · tam. {size}
             </div>
-            <div className="display text-2xl text-ink">R$ 80</div>
+            <div className="display text-2xl text-ink">R$ 90</div>
           </div>
           <BuyButton label="Comprar" />
         </div>
