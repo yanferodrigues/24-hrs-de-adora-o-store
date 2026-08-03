@@ -13,6 +13,19 @@ import { createClient } from "@supabase/supabase-js";
  * Usa `@supabase/supabase-js` direto (não o `@supabase/ssr`): aqui não há
  * cookie nem sessão de usuário para propagar.
  */
+/**
+ * As credenciais existem? Serve para recusar a compra ANTES de criar o
+ * pagamento no Mercado Pago: sem isso, `createAdminClient()` lançaria só
+ * depois, com o Pix já criado, e o rollback nunca rodaria — sobraria um QR
+ * órfão pagável.
+ */
+export function hasAdminCredentials(): boolean {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
+}
+
 export function createAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;

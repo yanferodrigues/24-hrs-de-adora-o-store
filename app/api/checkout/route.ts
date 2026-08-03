@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, hasAdminCredentials } from "@/lib/supabase/admin";
 import {
   isValidEmail,
   isValidName,
@@ -116,6 +116,19 @@ export async function POST(req: Request) {
     return NextResponse.json(
       { configured: true, error: "invalid_phone" },
       { status: 400 }
+    );
+  }
+
+  // Sem credenciais para gravar o pedido, recusamos ANTES de criar o Pix. Se
+  // deixássemos `createAdminClient()` lançar mais adiante, o pagamento já
+  // existiria no Mercado Pago e o rollback não rodaria — um QR órfão pagável.
+  if (!hasAdminCredentials()) {
+    console.error(
+      "[checkout] SUPABASE_SERVICE_ROLE_KEY ausente: nao da para gravar o pedido. Ver .env.example."
+    );
+    return NextResponse.json(
+      { configured: true, error: "order_save_failed" },
+      { status: 502 }
     );
   }
 

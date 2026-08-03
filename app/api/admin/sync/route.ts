@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, hasAdminCredentials } from "@/lib/supabase/admin";
 import { isAdminEmail } from "@/lib/admin";
 
 /**
@@ -28,6 +28,13 @@ export async function POST() {
   const key = process.env.MP_ACCESS_TOKEN;
   if (!key) {
     return NextResponse.json({ configured: false });
+  }
+
+  // Sem a chave service_role não há tabela para sincronizar. Erro tratado em
+  // vez de exceção: o botão mostra o aviso em pt-BR.
+  if (!hasAdminCredentials()) {
+    console.error("[sync] SUPABASE_SERVICE_ROLE_KEY ausente. Ver .env.example.");
+    return NextResponse.json({ error: "db_error" }, { status: 502 });
   }
 
   const admin = createAdminClient();

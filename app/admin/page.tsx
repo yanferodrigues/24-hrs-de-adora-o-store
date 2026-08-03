@@ -20,21 +20,26 @@ export default async function AdminPage() {
   // 404, não 403: um 403 confirmaria que a rota existe.
   if (!isAdminEmail(user?.email)) notFound();
 
-  const { data, error } = await createAdminClient()
-    .from("pedidos")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(2000);
+  // O try/catch existe porque `createAdminClient()` lança quando a chave
+  // service_role não está no .env.local — sem ele a tela viraria página de
+  // erro do Next em vez do aviso desenhado aqui.
+  let pedidos: PedidoRow[] = [];
+  let falhouLeitura = false;
 
-  if (error) {
+  try {
+    const { data, error } = await createAdminClient()
+      .from("pedidos")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(2000);
+
+    if (error) throw new Error(error.message);
+    pedidos = (data ?? []) as PedidoRow[];
+  } catch (e) {
     // A mensagem crua do Postgres não vai para a tela: só o fato.
-    console.error("[admin] falha ao ler pedidos:", error.message);
+    console.error("[admin] falha ao ler pedidos:", (e as Error).message);
+    falhouLeitura = true;
   }
 
-  return (
-    <PedidosTable
-      pedidos={(data ?? []) as PedidoRow[]}
-      falhouLeitura={Boolean(error)}
-    />
-  );
+  return <PedidosTable pedidos={pedidos} falhouLeitura={falhouLeitura} />;
 }
