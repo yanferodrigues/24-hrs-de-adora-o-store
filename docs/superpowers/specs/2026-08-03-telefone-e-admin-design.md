@@ -211,6 +211,12 @@ visitante anônimo cai no login (com `?next=/admin`) em vez de tomar 404 — o
 admin de verdade normalmente só não está logado ainda. Quem está logado e não é
 admin recebe o 404 da própria página.
 
+**Não existe link para `/admin` em nenhum lugar da interface.** A entrada é
+digitar a URL (ou salvar nos favoritos). Não é isso que protege a tela — o gate
+no servidor protege, link escondido não é segurança — mas evita ter que carregar
+um `isAdmin` até o navegador só para decidir se um link aparece. Ver "Fora de
+escopo".
+
 ### Colunas
 
 `NOME · E-MAIL · TELEFONE · MODELO · TAM · QTD · VALOR · DATA · HORA · STATUS`
@@ -280,6 +286,12 @@ botão sincronizar corrigindo um pedido pendente.
   único cabem numa página. Se passar disso, paginação primeiro.
 - **Telefone salvo na conta** — decisão explícita: o `user_metadata` fica
   intocado e o autocomplete do navegador cobre a recompra.
+- **Link para `/admin` na interface** — decisão explícita: a entrada é digitar
+  a URL. A alternativa seria um item "ADMIN" no `UserMenu` visível só para
+  admin, o que exigiria um campo `isAdmin` no `SessionUser`, calculado no
+  layout e hidratado no store. Descartado: mais superfície (um dado a mais
+  cruzando para o navegador, o `SessionUser` e seus testes mexidos) para
+  resolver algo que um favorito resolve.
 - **Busca e filtro na tabela** — `Ctrl+F` resolve nesse volume.
 
 ## Arquivos tocados
