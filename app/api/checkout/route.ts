@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import {
   isValidEmail,
   isValidName,
@@ -176,6 +177,46 @@ export async function POST(req: Request) {
 
   const payment = await resp.json();
   const tx = payment?.point_of_interaction?.transaction_data;
+
+  // Uma linha por item. Os valores vêm de `validos`, que já foi resolvido
+  // contra lib/data.ts — a tabela do admin herda a mesma garantia de que
+  // nenhum preço veio do navegador.
+  const { error: dbError } = await createAdminClient().from("pedidos").insert(
+    validos.map((i) => ({
+      payment_id: String(payment.id),
+      user_id: user.id,
+      nome: comprador,
+      email: contato,
+      telefone,
+      version: i.version,
+      fit: i.fit,
+      size: i.size,
+      qty: i.qty,
+      unit_price: i.price,
+      total: i.qty * i.price,
+      status: payment.status ?? "pending",
+    }))
+  );
+
+  // Se o pedido não entrou na tabela, não entregamos o QR: é essa tabela que
+  // vai valer na hora de entregar a camiseta no congresso, e alguém pagando um
+  // pedido que não existe nela é pior do que uma venda perdida. Cancelamos o
+  // Pix (best-effort) — um Pix não pago expira sozinho em 30 minutos.
+  if (dbError) {
+    console.error("[checkout] falha ao gravar o pedido:", dbError.message);
+    await fetch(`https://api.mercadopago.com/v1/payments/${payment.id}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${key}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status: "cancelled" }),
+    }).catch(() => {});
+    return NextResponse.json(
+      { configured: true, error: "order_save_failed" },
+      { status: 502 }
+    );
+  }
 
   return NextResponse.json({
     configured: true,

@@ -121,6 +121,12 @@ export default function CartDrawer() {
         setError(MSG.telefone);
         return;
       }
+      if (data.error === "order_save_failed") {
+        setError(
+          "Não conseguimos registrar seu pedido agora e por isso o Pix não foi gerado. Tente de novo em instantes — nada foi cobrado."
+        );
+        return;
+      }
       if (!res.ok || !data.qrCode) {
         setError("Não foi possível gerar o Pix. Confira o e-mail e tente de novo.");
         return;
