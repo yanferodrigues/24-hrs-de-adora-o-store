@@ -21,6 +21,15 @@ export async function middleware(request: NextRequest) {
   return NextResponse.redirect(url);
 }
 
+// Aqui só garantimos "tem alguém logado" — anônimo vai para /login?next=… e
+// volta depois de entrar. A AUTORIZAÇÃO do /admin (ser admin) é checada na
+// própria página e na rota de API, nunca só aqui: o Next 14.2 teve um CVE
+// (x-middleware-subrequest) que pulava o matcher inteiro.
 export const config = {
-  matcher: ["/produto/:path*", "/api/checkout/:path*"],
+  matcher: [
+    "/produto/:path*",
+    "/api/checkout/:path*",
+    "/admin/:path*",
+    "/api/admin/:path*",
+  ],
 };
