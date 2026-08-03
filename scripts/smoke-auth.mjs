@@ -77,6 +77,24 @@ async function main() {
   checar("...e o destino e /recuperar-senha", novaSenhaLocal.includes("/recuperar-senha"),
     `location = ${novaSenhaLocal || "(vazio)"}`);
 
+  // 8. /admin sem sessão redireciona para o login.
+  const admin = await fetch(`${BASE}/admin`, { redirect: "manual" });
+  const adminLocal = admin.headers.get("location") ?? "";
+  checar("GET /admin sem sessao redireciona",
+    admin.status === 307 || admin.status === 302,
+    `recebeu ${admin.status}`);
+  checar("...e o destino e /login com ?next",
+    adminLocal.includes("/login") && adminLocal.includes("next="),
+    `location = ${adminLocal || "(vazio)"}`);
+
+  // 9. A rota de sincronizar precisa recusar sem sessão.
+  const sync = await fetch(`${BASE}/api/admin/sync`, {
+    method: "POST",
+    redirect: "manual",
+  });
+  checar("POST /api/admin/sync sem sessao responde 401", sync.status === 401,
+    `recebeu ${sync.status}`);
+
   console.log(falhas === 0 ? "\nTudo certo." : `\n${falhas} falha(s).`);
   process.exit(falhas === 0 ? 0 : 1);
 }

@@ -32,9 +32,11 @@ Next.js 14 (App Router) + TypeScript + Tailwind + Framer Motion + Lenis + zustan
 - `app/produto/page.tsx` — **PDP marketplace**, **exige login**: galeria de fotos (frente/costas) + info (corte/tamanho/quantidade) + `CartDrawer`.
 - `app/login`, `app/cadastro`, `app/recuperar-senha`, `app/nova-senha` — telas de autenticação, todas usando `components/auth/AuthShell.tsx` como moldura.
 - `app/auth/callback/route.ts` — retorno do OAuth do Google **e** do link de recuperação de senha (`exchangeCodeForSession`).
-- `app/api/checkout/route.ts` — **pagamento Pix via Mercado Pago** (`POST /v1/payments`, `payment_method_id: "pix"`, REST via `fetch`, sem SDK). Usa `MP_ACCESS_TOKEN`; sem a chave responde `{configured:false}`. Recebe `{items, email, name}`, devolve `{qrCode, qrCodeBase64, paymentId, status}`.
-- `app/api/checkout/status/route.ts` — `GET ?id=<paymentId>`: status do pagamento (polling do `CartDrawer` até `approved`).
-- `app/api/checkout/cancel/route.ts` — cancela um Pix pendente (best-effort).
+- `app/api/checkout/route.ts` — **pagamento Pix via Mercado Pago** (`POST /v1/payments`, `payment_method_id: "pix"`, REST via `fetch`, sem SDK). Usa `MP_ACCESS_TOKEN`; sem a chave responde `{configured:false}`. Recebe `{items, email, name, phone}` — **telefone é obrigatório** — grava os pedidos e devolve `{qrCode, qrCodeBase64, paymentId, status}`.
+- `app/api/checkout/status/route.ts` — `GET ?id=<paymentId>`: status do pagamento (polling do `CartDrawer` até `approved`). Confere a posse do pagamento e grava o desfecho na tabela.
+- `app/api/checkout/cancel/route.ts` — cancela um Pix pendente (best-effort). Confere a posse antes.
+- `app/admin/page.tsx` — **tela de pedidos**, restrita a `ADMIN_EMAILS`: resumo (camisetas pagas, receita, quebra por tamanho) + tabela de todos os itens vendidos. **Não há link para ela em nenhum lugar da interface, de propósito** — a entrada é digitar a URL.
+- `app/api/admin/sync/route.ts` — reconsulta no Mercado Pago os pedidos `pending` e corrige o status (teto de 60 por clique).
 
 ### Autenticação (Supabase Auth)
 
@@ -48,6 +50,9 @@ Não existe tabela nossa: o Supabase gerencia `auth.users`, então **não há po
 | `lib/supabase/session.ts` | `toSessionUser()` — achata o usuário do Supabase para a UI |
 | `lib/auth-validation.ts` | validadores puros + `MSG` (todas as mensagens de UI) |
 | `middleware.ts` | o gate |
+| `lib/admin.ts` | `isAdminEmail()` — quem pode abrir `/admin` |
+| `lib/supabase/admin.ts` | cliente `service_role` (ignora RLS; **só servidor**) |
+| `lib/pedidos.ts` | tipo `PedidoRow` + `resumirPagos()` |
 
 O layout (`app/layout.tsx`) é `async`, resolve a sessão e injeta via `<SessionHydrator>` no store zustand. Isso torna o site **dinâmico** (renderizado por requisição) — sem impacto, já era tudo client.
 
@@ -61,6 +66,11 @@ Cada uma custou um achado Critical numa revisão. Se for mexer perto, leia prime
 4. **`updateSession` usa `getUser()`, nunca `getSession()`.** `getSession()` só lê o cookie, que é falsificável.
 5. **Nenhuma mensagem crua da API do Supabase chega à tela** — tudo passa por `MSG` (pt-BR). O `error.message` vem em inglês. Esse defeito já apareceu em três lugares.
 6. **`MAX_QTY_POR_ITEM`** (`lib/data.ts`) é aplicado no servidor, no store **e** nas duas UIs. Aplicar só embaixo faz a quantidade sumir em silêncio.
+7. **`SUPABASE_SERVICE_ROLE_KEY` nunca leva prefixo `NEXT_PUBLIC_`**, e só `lib/supabase/admin.ts` a lê — nunca importado de componente client. Com o prefixo, a chave vai para o bundle do navegador e qualquer visitante ganha acesso total ao banco, inclusive `auth.users`.
+8. **A tabela `pedidos` fica com RLS ligada e nenhuma política.** É isso que impede a chave `anon` (pública, no navegador) de listar telefone de terceiros. Criar uma política de leitura "para authenticated" expõe os dados de todos os compradores a qualquer pessoa com conta.
+9. **A checagem de admin acontece na página e em cada rota de API**, não só no middleware — mesma razão da invariante 3. Não-admin recebe **404**, não 403: um 403 confirma que a rota existe.
+10. **`ADMIN_EMAILS` vazia ou ausente significa "ninguém é admin"**, nunca o contrário — um `.env` esquecido não pode virar painel público.
+11. **Telefone é validado no servidor** (`isValidPhone`), não só no formulário. O botão desabilitado no carrinho é conveniência; a recusa `invalid_phone` é a trava.
 
 ### Estado (zustand) — `lib/store.ts`
 Campos: `scrollProgress` (0..1, alimenta a barra do `Topbar`), `size`, o **carrinho** (`cart`, `cartOpen`, `addToCart`, `removeFromCart`, `setQty`, `clearCart`) e a **sessão** (`user: SessionUser | null`, `setUser`). Versão única: `"Preta"`.
@@ -83,7 +93,8 @@ Hero · PeopleWearing · Manifesto · ArtReveal · Features · Gallery · SizeGu
 
 - Testes em `tests/*.test.ts`. Importam com **extensão `.ts` explícita** (`../lib/auth-validation.ts`) — exigência do type stripping do Node. Por isso `tests` está no `exclude` do `tsconfig.json`: sem isso o `next build` reclama do import.
 - O script é `node --test "tests/**/*.test.ts"`. **As aspas são obrigatórias.** Passar o diretório (`node --test tests`) falha com `MODULE_NOT_FOUND`.
-- `npm run smoke` cobre o gate de ponta a ponta contra o dev server. O que ele **não** cobre — clique real no Google, link de recuperação no e-mail, compra logada — está no checklist manual no fim de `docs/superpowers/plans/2026-07-28-login-supabase.md`.
+- `npm run smoke` cobre o gate de ponta a ponta contra o dev server (**15 checagens**, incluindo `/admin` e `/api/admin/sync`). O que ele **não** cobre — clique real no Google, link de recuperação no e-mail, compra logada — está no checklist manual no fim de `docs/superpowers/plans/2026-07-28-login-supabase.md`.
+- **Nada em `lib/` que seja importado por teste pode importar com o alias `@/`.** O `node --test` faz type stripping mas não resolve `paths` do tsconfig. `import type` passa (é apagado); import de valor quebra. Foi por isso que `resumirPagos` recebe os tamanhos por parâmetro em vez de importar `PRODUCT`.
 
 ## Estampa nos assets
 
@@ -96,7 +107,9 @@ O login depende de ajustes no **painel do Supabase** que nenhum arquivo deste re
 
 - **"Confirm email" precisa ficar DESLIGADO** (Authentication → Sign In / Providers → Email). Ligado, o e-mail embutido do plano gratuito não dá conta de dezenas de cadastros na mesma noite. Ligar/desligar também **muda o comportamento do `signUp` para e-mail repetido** — o código trata os dois casos, ver o spec.
 - **URI de redirecionamento no Google Cloud** aponta para o Supabase (`https://<ref>.supabase.co/auth/v1/callback`), **não** para o nosso domínio.
-- **Projeto gratuito hiberna após 7 dias sem atividade** — conferir se está ativo antes de qualquer divulgação.
+- **Projeto gratuito hiberna após 7 dias sem atividade** — conferir se está ativo antes de qualquer divulgação. Agora isso derruba **também a compra**, não só o login: a gravação do pedido faz parte do checkout.
+- **A tabela `pedidos` precisa existir** (SQL em `docs/superpowers/plans/2026-08-03-telefone-e-admin.md`, Task 4) e a `SUPABASE_SERVICE_ROLE_KEY` precisa estar no `.env.local`. Sem as duas, **nenhuma compra passa**: o checkout cancela o Pix e recusa quando não consegue gravar o pedido.
+- **`ADMIN_EMAILS`** no `.env.local` decide quem abre `/admin`. Em produção, cadastrar a variável no painel do host (o `.env.local` não sobe).
 
 Para conferir tudo de uma vez, sem abrir o painel:
 `curl -H "apikey: $ANON_KEY" "$SUPABASE_URL/auth/v1/settings"` → `mailer_autoconfirm: true` significa "Confirm email" desligado.
@@ -105,6 +118,8 @@ Para conferir tudo de uma vez, sem abrir o painel:
 
 - `docs/superpowers/specs/2026-07-28-login-supabase-design.md` — o **porquê** de cada decisão de auth, incluindo as contrapartidas aceitas.
 - `docs/superpowers/plans/2026-07-28-login-supabase.md` — o plano executado, com o **checklist manual** no fim.
+- `docs/superpowers/specs/2026-08-03-telefone-e-admin-design.md` — telefone obrigatório e `/admin`: por que a tabela `pedidos` vive no Supabase e o que foi deixado de fora.
+- `docs/superpowers/plans/2026-08-03-telefone-e-admin.md` — o plano executado, com **o SQL da tabela `pedidos`** (Task 4) e o checklist manual no fim.
 
 ## Pendências
 
@@ -112,8 +127,10 @@ Para conferir tudo de uma vez, sem abrir o painel:
 - **Branch `feat/login-supabase` não foi mergeada** na `main`.
 - **Token do Mercado Pago ainda é de TESTE** (`TEST-…`). Para receber de verdade: trocar pelo `APP_USR-…` **e** cadastrar uma chave Pix na conta do MP (sem ela o Pix não gera). Conferir a taxa em *Seu negócio → Custos* antes de fixar o preço.
 - **Chave secreta do OAuth do Google precisa ser rotacionada** — foi exposta num chat.
-- Confirmação do Pix é por **polling** no `CartDrawer` (funciona com o navegador aberto). Versão robusta = **webhook** (`/api/webhook/mercadopago`).
-- **Sem persistência de pedidos**: a reconciliação sai do painel do Mercado Pago, lendo a descrição do pagamento (que traz nome + corte + tamanho). Consequência: `/api/checkout/cancel` não consegue verificar se quem cancela é o dono do Pix.
+- Confirmação do Pix é por **polling** no `CartDrawer` (funciona com o navegador aberto). Quem paga e fecha a aba fica `pending` até alguém clicar em **Sincronizar status** no `/admin`. Versão robusta segue sendo o **webhook** (`/api/webhook/mercadopago`).
+- **Pedidos são persistidos** na tabela `pedidos` do Supabase (uma linha por item), lida pelo `/admin`. O SQL de criação está em `docs/superpowers/plans/2026-08-03-telefone-e-admin.md` (Task 4) — projeto novo ou restaurado precisa rodar de novo.
+- **Checklist manual do telefone + admin** nunca foi executado (compra real, `/admin` como admin, sincronizar corrigindo um pendente). Está no fim de `docs/superpowers/plans/2026-08-03-telefone-e-admin.md`.
+- **Branch `feat/telefone-e-admin` não foi mergeada** — e está empilhada na `feat/mais-vermelho`, que também não foi.
 - `public/pessoas/` está vazio — a landing mostra molduras vazias. Ver `LEIA-ME.txt` lá dentro.
 - `tsconfig.tsbuildinfo` está versionado e suja todo commit; deveria entrar no `.gitignore`.
 - `npm audit` acusa 2 high remanescentes (`next` e `postcss` transitivo), sem correção sem breaking change. Analisados como não aplicáveis: são DoS/cache-poisoning/SSRF em recursos que este projeto não usa, e o bypass restante é Pages Router com i18n (aqui é App Router sem i18n).
