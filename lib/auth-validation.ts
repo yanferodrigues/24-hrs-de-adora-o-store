@@ -16,6 +16,7 @@ export const MSG = {
   cadastro: "Não foi possível criar a conta. Confira os dados e tente de novo.",
   novaSenha:
     "Não foi possível salvar a senha. O link pode ter expirado — peça um novo em \"Esqueci minha senha\".",
+  telefone: "Digite um telefone com DDD, como (11) 91234-5678.",
 } as const;
 
 export function normalizeEmail(raw: string): string {
@@ -37,6 +38,51 @@ export function isValidName(raw: string): boolean {
 
 export function isValidPassword(raw: string): boolean {
   return raw.length >= 8;
+}
+
+/**
+ * Telefone brasileiro. Guardamos só os dígitos — a formatação é sempre na
+ * exibição, para buscar por número não depender de como a pessoa digitou.
+ */
+export function normalizePhone(raw: string): string {
+  const digitos = (raw ?? "").replace(/\D/g, "");
+  // Alguém colou com o código do país: 55 + DDD + 8 ou 9 dígitos = 12 ou 13.
+  // Em 11 dígitos, "55" é DDD (Santa Maria/RS) e não pode ser removido.
+  if (
+    (digitos.length === 12 || digitos.length === 13) &&
+    digitos.startsWith("55")
+  ) {
+    return digitos.slice(2);
+  }
+  return digitos;
+}
+
+export function isValidPhone(raw: string): boolean {
+  const d = normalizePhone(raw);
+  if (d.length !== 10 && d.length !== 11) return false;
+
+  const ddd = Number(d.slice(0, 2));
+  if (ddd < 11 || ddd > 99) return false;
+
+  // Todo celular brasileiro de 11 dígitos começa com 9 depois do DDD. A regra
+  // pega erro de digitação sem recusar nada legítimo. Fixo de 10 dígitos
+  // continua valendo: em cidade pequena pode ser o único telefone da pessoa.
+  if (d.length === 11 && d[2] !== "9") return false;
+
+  return true;
+}
+
+/**
+ * `(11) 91234-5678`. Progressivo de propósito: é a mesma função que faz a
+ * máscara enquanto a pessoa digita no carrinho e que formata a tabela do admin.
+ */
+export function formatPhone(raw: string): string {
+  const d = normalizePhone(raw).slice(0, 11);
+  if (d.length <= 2) return d;
+  const ddd = `(${d.slice(0, 2)})`;
+  if (d.length <= 6) return `${ddd} ${d.slice(2)}`;
+  if (d.length <= 10) return `${ddd} ${d.slice(2, 6)}-${d.slice(6)}`;
+  return `${ddd} ${d.slice(2, 7)}-${d.slice(7)}`;
 }
 
 /**
