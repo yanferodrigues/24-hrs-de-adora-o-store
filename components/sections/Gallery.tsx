@@ -6,7 +6,10 @@ import { Reveal } from "@/components/Reveal";
 const FRENTE = "/imagens/mockup-frente.webp";
 const COSTAS = "/imagens/mockup-costas.webp";
 
-// grade editorial com as fotos reais (frente + costas) e dois close-ups da estampa
+/* Grade editorial: as fotos de estúdio da peça (frente + costas) ao lado de
+   duas fotos no corpo. O mockup mostra a estampa inteira e reta; a foto no
+   corpo mostra o tamanho real dela em quem vai vestir — uma coisa não
+   substitui a outra, então a grade tem as duas. */
 const TILES = [
   {
     src: COSTAS,
@@ -17,20 +20,20 @@ const TILES = [
     zoom: "group-hover:scale-105",
   },
   {
-    src: COSTAS,
+    src: "/pessoas/07-costas.jpg",
     span: "",
     ratio: "aspect-square",
-    cap: "Close · a cena",
-    fit: "object-cover",
-    zoom: "scale-[1.9] object-[50%_38%] group-hover:scale-[2.02]",
+    cap: "Costas · no corpo",
+    fit: "object-cover object-[50%_62%]",
+    zoom: "scale-[1.15] group-hover:scale-[1.22]",
   },
   {
-    src: FRENTE,
+    src: "/pessoas/08-detalhe.jpg",
     span: "",
     ratio: "aspect-square",
     cap: "Detalhe · lettering",
-    fit: "object-cover",
-    zoom: "scale-[1.7] object-[50%_34%] group-hover:scale-[1.82]",
+    fit: "object-cover object-center",
+    zoom: "group-hover:scale-105",
   },
   {
     src: FRENTE,
@@ -70,8 +73,8 @@ export default function Gallery() {
                   sizes="(max-width: 640px) 50vw, 25vw"
                   className={`${t.fit} ${t.zoom} transition-transform duration-700`}
                 />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                <figcaption className="absolute bottom-3 left-3 font-mono text-[9px] uppercase tracking-[0.2em] text-gold-lite/90">
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+                <figcaption className="cap-foto absolute bottom-3 left-3 font-mono text-[9px] uppercase tracking-[0.2em]">
                   {t.cap}
                 </figcaption>
               </figure>

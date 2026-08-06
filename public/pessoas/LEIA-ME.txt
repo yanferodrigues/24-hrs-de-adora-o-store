@@ -1,13 +1,23 @@
 Fotos de pessoas vestindo a camiseta.
 
-Coloque os arquivos aqui com estes nomes:
-  01.webp  02.webp  03.webp  04.webp
+O que ja esta publicado (secao "Vestindo" da landing):
+  01.webp  02.webp  03.webp  04.webp   -> frente (lettering)
+  05-costas.jpg  06-costas.jpg  07-costas.jpg  -> costas (a cena do Rei)
+  08-detalhe.jpg                        -> close do peito
 
-Formato: retrato ~3:4 (ex. 1200x1600), webp, ate ~400kb cada.
+Algumas delas tambem aparecem no shop:
+  03.webp e 06-costas.jpg e 08-detalhe.jpg -> galeria da pagina /produto
+  07-costas.jpg e 08-detalhe.jpg           -> grade da secao "A Peca" da landing
 
-Depois abra components/sections/PeopleWearing.tsx e troque, em cada slot,
-  src: null
-por
-  src: "/pessoas/01.webp"   (e assim por diante)
+Para trocar ou acrescentar uma foto:
+  1. coloque o arquivo aqui (retrato ~3:4, ex. 1200x1600, ate ~300kb)
+  2. abra components/sections/PeopleWearing.tsx e edite a lista SLOTS
+     (src, cap e, se a foto for retrato mais alta que o quadro, fit:
+      "object-cover object-top" para nao cortar a cabeca)
 
-Enquanto o src for null, o espaco aparece como moldura vazia na landing.
+Enquanto o src de um slot for null, o espaco aparece como moldura vazia
+na landing -- de proposito, para lembrar de preencher antes de divulgar.
+
+Os PNGs originais das 4 fotos novas ficam em ../../fotos-originais/
+(fora de public/, para nao subirem no deploy). Os arquivos servidos sao os
+.jpg otimizados: ~150kb cada, contra ~2MB do PNG.

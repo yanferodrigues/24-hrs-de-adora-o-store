@@ -100,6 +100,9 @@ Hero · PeopleWearing · Manifesto · ArtReveal · Features · Gallery · SizeGu
 
 - **Designs (com alpha)**: `public/designs/front.webp` (lettering "VOLTAREI" + "APOCALIPSE 19") e `back.webp` (ilustração do Rei) — derivados otimizados dos PNGs originais. **Não** referencie os PNGs pesados (o das costas tem 23MB). Usados no Hero e na ArtReveal dentro de `.relic`. O `front.webp` também é a arte do topo das telas de login e o favicon (`app/icon.png`).
 - **Fotos mockup**: `public/imagens/mockup-frente.webp` e `mockup-costas.webp`. Usadas na Galeria e na PDP.
+- **Foto de abertura**: `public/imagens/fundo-principal.jpg` — o grupo vestindo a peça, fundo preto com brasa dourada. É o fundo do Hero, e é o que torna o primeiro frame a **única ilha escura** de um site claro (ver `.on-shot` e `.shot-veil` no `globals.css`).
+- **Fotos no corpo**: `public/pessoas/01..04.webp` (frente), `05-costas.jpg`, `06-costas.jpg`, `07-costas.jpg` (costas) e `08-detalhe.jpg` (close do peito). Aparecem na seção "Vestindo", na Galeria e na galeria da PDP — o mapa está no `LEIA-ME.txt` da pasta.
+- **PNGs originais** ficam em `fotos-originais/`, fora de `public/` e no `.gitignore`: pesam ~2MB cada contra ~150KB dos `.jpg` servidos. Não existe encoder de WebP nesta máquina (sem `sharp`, `ffmpeg` ou `cwebp`) — a conversão foi feita com `System.Drawing` no PowerShell, por isso os arquivos novos são `.jpg` e não `.webp`.
 
 ## Configuração fora do código (não versionável)
 

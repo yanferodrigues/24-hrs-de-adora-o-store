@@ -19,11 +19,37 @@ type Slot = {
   fit?: string;
 };
 
+/* Duas fileiras de quatro no desktop: em cima a frente (o lettering), embaixo
+   as costas (a cena do Rei) e o close do peito. Quem rola vê o produto inteiro
+   sem precisar abrir a página do produto. */
 const SLOTS: Slot[] = [
-  { src: null, file: "/pessoas/01.webp", cap: "No corpo · 01" },
-  { src: null, file: "/pessoas/02.webp", cap: "No corpo · 02" },
-  { src: null, file: "/pessoas/03.webp", cap: "No corpo · 03" },
-  { src: null, file: "/pessoas/04.webp", cap: "No corpo · 04" },
+  { src: "/pessoas/01.webp", file: "/pessoas/01.webp", cap: "Frente · 01" },
+  { src: "/pessoas/02.webp", file: "/pessoas/02.webp", cap: "Frente · 02" },
+  { src: "/pessoas/03.webp", file: "/pessoas/03.webp", cap: "Frente · 03" },
+  { src: "/pessoas/04.webp", file: "/pessoas/04.webp", cap: "Frente · 04" },
+  {
+    src: "/pessoas/05-costas.jpg",
+    file: "/pessoas/05-costas.jpg",
+    cap: "Costas · o Rei",
+    fit: "object-cover object-top",
+  },
+  {
+    src: "/pessoas/07-costas.jpg",
+    file: "/pessoas/07-costas.jpg",
+    cap: "Costas · Apocalipse 19",
+    fit: "object-cover object-top",
+  },
+  {
+    src: "/pessoas/06-costas.jpg",
+    file: "/pessoas/06-costas.jpg",
+    cap: "Costas · no corpo",
+    fit: "object-cover object-top",
+  },
+  {
+    src: "/pessoas/08-detalhe.jpg",
+    file: "/pessoas/08-detalhe.jpg",
+    cap: "Detalhe · lettering",
+  },
 ];
 
 export default function PeopleWearing() {
@@ -40,7 +66,7 @@ export default function PeopleWearing() {
           </h2>
           <span aria-hidden className="blood-mark mt-6" />
           <p className="mt-4 max-w-md text-[15px] leading-relaxed text-mute">
-            A peça no corpo
+            A peça no corpo — frente e costas, sem retoque.
           </p>
         </Reveal>
 
@@ -64,8 +90,8 @@ export default function PeopleWearing() {
                         slot.fit ?? "object-cover object-center"
                       } transition-transform duration-700 group-hover:scale-105`}
                     />
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                    <figcaption className="absolute bottom-3 left-3 font-mono text-[9px] uppercase tracking-[0.2em] text-gold-lite/90">
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+                    <figcaption className="cap-foto absolute bottom-3 left-3 font-mono text-[9px] uppercase tracking-[0.2em]">
                       {slot.cap}
                     </figcaption>
                   </>

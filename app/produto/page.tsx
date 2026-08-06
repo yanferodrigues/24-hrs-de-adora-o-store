@@ -8,10 +8,42 @@ import CartDrawer from "@/components/shop/CartDrawer";
 import { PRODUCT, FITS, MAX_QTY_POR_ITEM } from "@/lib/data";
 import { useStore, type Fit } from "@/lib/store";
 
-type View = "frente" | "costas";
-const VIEWS: { id: View; label: string; src: string }[] = [
-  { id: "frente", label: "Frente", src: "/imagens/mockup-frente.webp" },
-  { id: "costas", label: "Costas", src: "/imagens/mockup-costas.webp" },
+/* Galeria da PDP: os dois mockups (estampa inteira, reta) e três fotos no
+   corpo. `fit` vem junto porque as fotos são retrato 2:3 dentro de um quadro
+   quadrado — sem `object-top` o corte come a cabeça de quem está vestindo. */
+type View = { id: string; label: string; src: string; fit: string };
+
+const VIEWS: View[] = [
+  {
+    id: "frente",
+    label: "Frente",
+    src: "/imagens/mockup-frente.webp",
+    fit: "object-cover object-center",
+  },
+  {
+    id: "costas",
+    label: "Costas",
+    src: "/imagens/mockup-costas.webp",
+    fit: "object-cover object-center",
+  },
+  {
+    id: "no-corpo",
+    label: "No corpo",
+    src: "/pessoas/01.webp",
+    fit: "object-cover object-top",
+  },
+  {
+    id: "costas-corpo",
+    label: "Costas no corpo",
+    src: "/pessoas/05-costas.jpg",
+    fit: "object-cover object-top",
+  },
+  {
+    id: "detalhe",
+    label: "Detalhe",
+    src: "/pessoas/08-detalhe.jpg",
+    fit: "object-cover object-center",
+  },
 ];
 
 export default function ProdutoPage() {
@@ -20,11 +52,12 @@ export default function ProdutoPage() {
 
   const [size, setSize] = useState<string>("M");
   const [qty, setQty] = useState(1);
-  const [view, setView] = useState<View>("frente");
+  const [viewId, setViewId] = useState<string>(VIEWS[0].id);
   const [fit, setFit] = useState<Fit>("Regular");
   const [addWarning, setAddWarning] = useState<string | null>(null);
 
   const unitPrice = FITS.find((f) => f.id === fit)?.price ?? PRODUCT.price;
+  const view = VIEWS.find((v) => v.id === viewId) ?? VIEWS[0];
 
   // Quantas unidades desse corte+tamanho já estão no carrinho — o teto vale
   // para a soma, não só para o que está sendo adicionado agora.
@@ -60,33 +93,31 @@ export default function ProdutoPage() {
             }}
           >
             <Image
-              src={view === "frente" ? "/imagens/mockup-frente.webp" : "/imagens/mockup-costas.webp"}
-              alt={`Camiseta oficial — ${view}`}
+              src={view.src}
+              alt={`Camiseta oficial — ${view.label}`}
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
+              className={view.fit}
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-5 gap-2">
             {VIEWS.map((v) => (
               <button
                 key={v.id}
-                onClick={() => setView(v.id)}
-                aria-pressed={view === v.id}
+                onClick={() => setViewId(v.id)}
+                aria-pressed={v.id === viewId}
                 aria-label={v.label}
+                title={v.label}
                 className="relative aspect-square overflow-hidden rounded-xl border-2 transition-colors"
                 style={{
-                  borderColor: view === v.id ? "var(--ink)" : "var(--line)",
+                  borderColor: v.id === viewId ? "var(--ink)" : "var(--line)",
                   background:
                     "radial-gradient(120% 120% at 50% 35%, var(--surface), var(--surface-2))",
                 }}
               >
-                <Image src={v.src} alt={v.label} fill sizes="120px" className="object-cover" />
-                <span className="absolute bottom-1.5 left-1.5 font-mono text-[8px] uppercase tracking-wider text-white/80">
-                  {v.label}
-                </span>
+                <Image src={v.src} alt={v.label} fill sizes="120px" className={v.fit} />
               </button>
             ))}
           </div>

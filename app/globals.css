@@ -149,6 +149,79 @@ html {
     -webkit-text-stroke: 1.2px var(--gold-deep);
   }
 
+  /* ---- ilha escura: conteúdo sobre a foto de abertura ----
+     A foto do congresso é preta com brasa dourada, então o primeiro frame é
+     a única ilha escura de um site claro. Em vez de trocar classe por classe
+     (e deixar um `text-parchment` preto escapar num canto), redefinimos os
+     tokens dentro da seção: tudo que já usa var() acompanha sozinho.
+
+     Aqui a paleta inteira colapsa num tom só: #ccb280, o ouro do lettering da
+     estampa. Nada de sangue, nada do ouro fechado do resto do site — o
+     primeiro frame é monocromático na cor da logo, e ela é o único elemento
+     que mantém desenho próprio. Por isso `.relic-shot` (a arte) não leva
+     filtro nenhum.
+     `--void` fica de fora de propósito: é ele que dá a cor do degradê que
+     costura o hero com o resto da página. */
+  .on-shot {
+    --parchment: #ccb280;
+    --ink: #ccb280;
+    --ash: #ccb280;
+    --mute: #ccb280;
+    /* o terciário (aviso do Pix, nome de quem está logado) leva um véu: sem
+       nenhuma diferença de peso, os 10px competem com o título */
+    --ash-2: rgba(204, 178, 128, 0.75);
+    --mute-2: rgba(204, 178, 128, 0.75);
+    --gold: #ccb280;
+    --gold-lite: #ccb280;
+    --gold-deep: rgba(204, 178, 128, 0.5);
+    --accent: #ccb280;
+    --accent-on: #14110c; /* botão em ouro pede texto escuro por cima */
+    --blood: #ccb280;
+    --blood-lite: #ccb280;
+    --line: rgba(204, 178, 128, 0.24);
+    --line-soft: rgba(204, 178, 128, 0.12);
+    color: var(--mute);
+  }
+
+  /* Véu sobre a foto. Escurece o miolo — onde vive o texto — sem apagar as
+     pessoas das pontas, e termina no branco gelo da página para que a virada
+     de escuro para claro seja um degradê, não um corte. */
+  .shot-veil::before,
+  .shot-veil::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  .shot-veil::before {
+    z-index: 1;
+    background: radial-gradient(
+        62% 58% at 50% 44%,
+        rgba(5, 4, 3, 0.9),
+        rgba(5, 4, 3, 0.72) 58%,
+        rgba(5, 4, 3, 0.42) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(5, 4, 3, 0.72),
+        rgba(5, 4, 3, 0.14) 26%,
+        rgba(5, 4, 3, 0.2) 70%,
+        rgba(5, 4, 3, 0.5) 100%
+      );
+  }
+  /* A costura com a página clara: uma faixa de 120px colada na base. Em px, e
+     não em %, de propósito — a altura da seção muda com o viewport, e num %
+     a faixa subia até engolir a última linha do hero (texto claro sobre fundo
+     quase branco). 120px cabe dentro do `pb-28` do Hero em qualquer tela. */
+  .shot-veil::after {
+    z-index: 2;
+    background: linear-gradient(
+      to top,
+      var(--void),
+      rgba(239, 241, 239, 0.82) 5px,
+      rgba(239, 241, 239, 0) 20px
+    );
+  }
+
   /* wrapper de posicionamento da arte (sem glow) */
   .relic {
     position: relative;
@@ -158,6 +231,12 @@ html {
      Só para a arte de lettering — a ilustração colorida vai sem filtro. */
   .relic-ink img {
     filter: brightness(0.6) saturate(1.55) contrast(1.1);
+  }
+  /* Sobre a foto o lettering volta ao ouro original — foi desenhado para
+     brilhar no preto. A sombra o descola das camisetas que estão ao fundo,
+     que carregam o mesmo desenho. */
+  .relic-shot img {
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.9));
   }
 
   /* costura sagrada: hairline dourada com marca vermelha no centro */
@@ -213,6 +292,16 @@ html {
   .btn-ghost:hover {
     background: transparent;
     border-color: var(--gold-deep);
+  }
+
+  /* Legenda por cima de foto. As fotos de estúdio têm fundo cinza claro, e o
+     ouro fechado da paleta some nele — aqui o tom vai aberto, com sombra, em
+     vez de escurecer a foto inteira só para caber um rótulo de 9px. */
+  .cap-foto {
+    /* literal, e não var(--gold-lite): o ouro do tema é fechado para se ler no
+       branco da página, e é justamente isso que o apaga em cima da foto. */
+    color: #eec97e;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 12px rgba(0, 0, 0, 0.7);
   }
 
   /* card de superfície com hairline quente */

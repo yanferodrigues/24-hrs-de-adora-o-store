@@ -8,3 +8,6 @@
 .DS_Store
 next-env.d.ts
 /data
+# PNGs originais das fotos (pesados). O que o site serve sao os .jpg
+# otimizados em public/ — estes ficam aqui so como fonte para recortar de novo.
+/fotos-originais

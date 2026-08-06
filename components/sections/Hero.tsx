@@ -11,92 +11,98 @@ export default function Hero() {
   return (
     <section
       id="top"
-      className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-6 pb-16 pt-28 text-center"
+      className="on-shot relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-6 pb-28 pt-28 text-center"
     >
-      {/* tag sagrada de abertura */}
-      <motion.p
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.9, ease }}
-        className="sacred mb-10"
-      >
-        24 Horas de Adoração
-      </motion.p>
-
-      {/* relíquia: o lettering dourado brilhando no escuro */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.94, y: 18 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 1.2, ease, delay: 0.1 }}
-        className="relic relic-ink w-[min(92vw,780px)]"
-      >
+      {/* A foto de abertura: o congresso já vestindo a peça. `z-0` no wrapper
+          cria o contexto de empilhamento, então o véu (::before/::after, z 1 e
+          2) cobre a imagem e o conteúdo (z-10) fica acima de tudo. */}
+      <div aria-hidden className="shot-veil absolute inset-0 z-0">
         <Image
-          src="/designs/front.webp"
-          alt="VOLTAREI — Congresso de Louvor, Apocalipse 19"
-          width={2048}
-          height={832}
+          src="/imagens/fundo-principal.jpg"
+          alt=""
+          fill
           priority
-          sizes="(max-width: 780px) 92vw, 780px"
-          className="h-auto w-full"
+          quality={82}
+          sizes="100vw"
+          className="object-cover object-center"
         />
-      </motion.div>
+      </div>
 
-      {/* o que é: congresso de louvor — o nome (VOLTAREI) está na arte acima */}
-      <motion.h1
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease, delay: 0.45 }}
-        className="display mt-8 text-parchment"
-        style={{
-          fontSize: "clamp(1.15rem,3.2vw,2rem)",
-          letterSpacing: "0.14em",
-          lineHeight: 1.15,
-        }}
-      >
-        Congresso de Louvor
-      </motion.h1>
+      <div className="relative z-10 flex w-full flex-col items-center">
+        {/* tag sagrada de abertura */}
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease }}
+          className="sacred mb-10"
+        >
+          24 Horas de Adoração
+        </motion.p>
 
-      {/* o traço da estampa, repetido sob o nome do congresso */}
-      <motion.span
-        aria-hidden
-        initial={{ opacity: 0, scaleX: 0.2 }}
-        animate={{ opacity: 1, scaleX: 1 }}
-        transition={{ duration: 0.9, ease, delay: 0.55 }}
-        className="blood-mark blood-mark-long mt-5"
-      />
+        {/* relíquia: o lettering dourado brilhando no escuro */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.94, y: 18 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 1.2, ease, delay: 0.1 }}
+          className="relic relic-shot w-[min(88vw,720px)]"
+        >
+          <Image
+            src="/designs/front.webp"
+            alt="VOLTAREI — Congresso de Louvor, Apocalipse 19"
+            width={2048}
+            height={832}
+            priority
+            sizes="(max-width: 720px) 88vw, 720px"
+            className="h-auto w-full"
+          />
+        </motion.div>
 
-      {/* onde e quando */}
-      <motion.p
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease, delay: 0.52 }}
-        className="mt-4 font-mono text-[11px] uppercase tracking-[0.22em] text-gold-lite/90"
-      >
-        Igreja Brasil Para Cristo · 15 · 10 · 2026
-      </motion.p>
+        {/* o que é: congresso de louvor — o nome (VOLTAREI) está na arte acima */}
+        <motion.h1
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease, delay: 0.45 }}
+          className="display mt-8 text-parchment"
+          style={{
+            fontSize: "clamp(1.15rem,3.2vw,2rem)",
+            letterSpacing: "0.14em",
+            lineHeight: 1.15,
+          }}
+        >
+          Congresso de Louvor
+        </motion.h1>
 
-      <motion.p
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease, delay: 0.6 }}
-        className="mx-auto mt-5 max-w-md text-[15px] leading-relaxed text-mute"
-      >
-        A camiseta oficial do congresso. O Rei no cavalo branco —{" "}
-        <span className="text-parchment">Voltará</span>. Estampa
-        dourada em algodão premium, edição limitada.
-      </motion.p>
+        {/* onde e quando */}
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease, delay: 0.52 }}
+          className="mt-4 font-mono text-[11px] uppercase tracking-[0.22em] text-gold-lite"
+        >
+          Igreja Brasil Para Cristo · 15 · 10 · 2026
+        </motion.p>
 
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease, delay: 0.7 }}
-        className="mt-9 flex flex-col items-center gap-4"
-      >
-        <BuyButton showPrice />
-        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-mute-2">
-          Pix · entrega antes de {PRODUCT.eventDateLabel}
-        </span>
-      </motion.div>
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease, delay: 0.6 }}
+          className="mx-auto mt-5 max-w-md text-[15px] leading-relaxed text-mute"
+        >
+          
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease, delay: 0.7 }}
+          className="mt-9 flex flex-col items-center gap-4"
+        >
+          <BuyButton showPrice />
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-mute-2">
+            Pix · entrega antes de {PRODUCT.eventDateLabel}
+          </span>
+        </motion.div>
+      </div>
     </section>
   );
 }
