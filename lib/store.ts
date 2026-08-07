@@ -4,7 +4,7 @@ import { create } from "zustand";
 import { MAX_QTY_POR_ITEM } from "@/lib/data";
 
 export type Version = "Preta";
-export type Fit = "Regular" | "Oversized";
+export type Fit = "Slimfit" | "Oversized";
 
 export interface CartItem {
   id: string; // `${version}-${fit}-${size}`

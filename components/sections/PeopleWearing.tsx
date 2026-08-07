@@ -66,7 +66,7 @@ export default function PeopleWearing() {
           </h2>
           <span aria-hidden className="blood-mark mt-6" />
           <p className="mt-4 max-w-md text-[15px] leading-relaxed text-mute">
-            A peça no corpo — frente e costas, sem retoque.
+            A peça no corpo — na rua, no ensaio, no 24 Horas de adoração.
           </p>
         </Reveal>
 

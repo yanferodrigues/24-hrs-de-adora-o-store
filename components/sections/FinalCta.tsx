@@ -17,7 +17,7 @@ export default function FinalCta() {
 
         <Reveal delay={0.05}>
           <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-mute-2">
-            O congresso começa em
+            As vendas se encerram em
           </span>
           <div className="mt-5 flex justify-center">
             <Countdown />

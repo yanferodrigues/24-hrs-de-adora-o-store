@@ -4,11 +4,15 @@ import Image from "next/image";
 import { Reveal } from "@/components/Reveal";
 
 const points = [
-  { label: "O Cavaleiro", desc: "Fiel e Verdadeiro, montado no cavalo branco (Ap 19)." },
-  { label: "A multidão", desc: "Reis e povos entregam suas coroas em adoração." },
+  { label: "O CÉU SE ABRE", desc: "O momento da volta triunfante de Cristo. — é a esperança da Igreja e a certeza de que o Rei virá." },
+  { label: "O REI VITORIOSO", desc: "Montado em um cavalo branco, Ele vem para julgar e guerrear com justiça. Seus olhos são como chama de fogo, em sua veste e em sua coxa está escrito: “REI DOS REIS E SENHOR DOS SENHORES.”" },
   {
-    label: "O Rei dos reis",
-    desc: "No manto e na coxa, o nome escrito: Rei dos reis e Senhor dos senhores (Ap 19.16).",
+    label: "OS EXÉRCITOS DO CÉU",
+    desc: "Vestidos de linho branco e puro, acompanham o Rei em sua volta gloriosa.",
+  },
+  {
+    label: "TODOS SE RENDERÃO DIANTE DELE",
+    desc: "E todo joelho se dobrará.",
   },
 ];
 
@@ -44,10 +48,9 @@ export default function ArtReveal() {
 
           <Reveal delay={0.1}>
             <p className="mt-6 max-w-md text-[15px] leading-relaxed text-mute">
-              Nas costas, a ilustração completa de Apocalipse 19: o Rei dos reis
-              e Senhor dos senhores, a espada em chamas, os exércitos e todo
-              joelho que se dobra. Impressão premium, cores firmes que não
-              craquelam.
+              Vista a mensagem que estamos anunciando: <strong>Maranata — Ele vem!</strong>
+              <br />A camiseta oficial do 24H traduz em sua arte a promessa da volta triunfante de Cristo, tema que cantaremos e declararemos profeticamente nesta edição.
+              <br />Criada pelo Coletivo Emaús, em algodão premium e produzida em edição limitada.
             </p>
           </Reveal>
 

@@ -27,6 +27,18 @@ const VIEWS: View[] = [
     fit: "object-cover object-center",
   },
   {
+    id: "slimfit",
+    label: "Frente",
+    src: "/imagens/modelo slimfit.png",
+    fit: "object-cover object-center",
+  },
+  {
+    id: "slimfit costas",
+    label: "Frente",
+    src: "/imagens/modelo slimfit costas.png",
+    fit: "object-cover object-center",
+  },
+  {
     id: "no-corpo",
     label: "No corpo",
     src: "/pessoas/01.webp",
@@ -53,7 +65,7 @@ export default function ProdutoPage() {
   const [size, setSize] = useState<string>("M");
   const [qty, setQty] = useState(1);
   const [viewId, setViewId] = useState<string>(VIEWS[0].id);
-  const [fit, setFit] = useState<Fit>("Regular");
+  const [fit, setFit] = useState<Fit>("Oversized");
   const [addWarning, setAddWarning] = useState<string | null>(null);
 
   const unitPrice = FITS.find((f) => f.id === fit)?.price ?? PRODUCT.price;

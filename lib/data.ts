@@ -4,10 +4,10 @@ export const PRODUCT = {
   price: 90, // preço base (corte Regular)
   priceLabel: "R$ 90",
   currency: "BRL",
-  eventDate: "2026-10-15T00:00:00-03:00", // 15/10/2026
-  eventDateLabel: "15 de outubro de 2026",
+  eventDate: "2026-08-31T00:00:00-03:00", // 15/10/2026
+  eventDateLabel: "31 de Agosto de 2026",
   tagline: "Ele disse: voltarei",
-  sizes: ["P", "M", "G", "GG", "XG"],
+  sizes: ["PP", "P", "M", "G", "GG"],
 };
 
 /**
@@ -19,7 +19,7 @@ export const MAX_QTY_POR_ITEM = 10;
 
 // Corte: Regular (base) e Oversized (mais amplo, +R$20)
 export const FITS = [
-  { id: "Regular", label: "Regular", price: 90 },
+  { id: "Slimfit", label: "Slimfit", price: 90 },
   { id: "Oversized", label: "Oversized", price: 110 },
 ] as const;
 
@@ -31,7 +31,7 @@ export const FEATURES = [
   },
   {
     tag: "Caimento",
-    title: "Corte oversized streetwear",
+    title: "Corte oversized e Slimfit",
     body: "Ombro caído, corpo amplo e comprimento moderno — o corte que você vai usar muito além do congresso.",
   },
   {
@@ -74,11 +74,11 @@ export const TESTIMONIALS = [
 ];
 
 export const SIZE_GUIDE = [
-  { size: "P", chest: 52, length: 68 },
-  { size: "M", chest: 55, length: 71 },
-  { size: "G", chest: 58, length: 74 },
-  { size: "GG", chest: 61, length: 76 },
-  { size: "XG", chest: 64, length: 78 },
+  { size: "PP", chest: 53, length: 72 },
+  { size: "P", chest: 57, length: 76 },
+  { size: "M", chest: 60, length: 78 },
+  { size: "G", chest: 61, length: 79 },
+  { size: "GG", chest: 64, length: 84 },
 ];
 
 export const FAQ = [

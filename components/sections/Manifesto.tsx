@@ -8,7 +8,7 @@ export default function Manifesto() {
       <div className="wrap max-w-3xl text-center">
         <Reveal>
           <p className="seam mb-10">
-            <span className="sacred">Apocalipse 19</span>
+            <span className="sacred">24 horas de adoração</span>
           </p>
         </Reveal>
         <Reveal delay={0.05}>
@@ -21,8 +21,8 @@ export default function Manifesto() {
             }}
           >
             Não é apenas uma camiseta.
-            <br />É um{" "}
-            <span className="gold-text">lembrete</span>: o Rei está voltando.
+            <br />É uma{" "}
+            <span className="gold-text">declaração</span>: Ele virá!
           </p>
         </Reveal>
         <Reveal delay={0.09}>
@@ -30,9 +30,7 @@ export default function Manifesto() {
         </Reveal>
         <Reveal delay={0.12}>
           <p className="mx-auto mt-8 max-w-xl text-[15px] leading-relaxed text-mute">
-            &ldquo;Vi o céu aberto, e eis um cavalo branco. Aquele que estava
-            montado nele chama-se Fiel e Verdadeiro.&rdquo; Cada peça carrega a
-            cena da volta do Rei — para vestir a esperança, não só o tecido.
+            &ldquo;“Eis que venho sem demora.”&rdquo;  — Apocalipse 22:12
           </p>
         </Reveal>
       </div>

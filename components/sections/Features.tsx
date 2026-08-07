@@ -16,7 +16,7 @@ export default function Features() {
             className="display max-w-2xl text-parchment"
             style={{ fontSize: "clamp(2rem,5.5vw,3.6rem)", lineHeight: 1.04 }}
           >
-            Feita para a <span className="gold-text">adoração</span>
+            vista no <span className="gold-text">24 horas de adoração</span>
           </h2>
           <span aria-hidden className="blood-mark mt-6" />
         </Reveal>
