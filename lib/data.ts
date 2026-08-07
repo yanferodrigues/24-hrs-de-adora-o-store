@@ -84,11 +84,11 @@ export const SIZE_GUIDE = [
 export const FAQ = [
   {
     q: "A entrega chega antes do congresso?",
-    a: "Sim. Pedidos feitos com antecedência são despachados para chegar antes de 15 de outubro de 2026. Entre em contato conosco para mais informações de retirada.",
+    a: "Sim. Pedidos feitos com antecedência são despachados para chegar antes de 23 de outubro de 2026. Entre em contato conosco para mais informações de retirada.",
   },
   {
     q: "Quais formas de pagamento?",
-    a: "Pix (com confirmação na hora) e cartão. O pagamento é processado em ambiente seguro.",
+    a: "Pix (com confirmação na hora). O pagamento é processado em ambiente seguro.",
   },
   {
     q: "Como lavar sem estragar a estampa?",
