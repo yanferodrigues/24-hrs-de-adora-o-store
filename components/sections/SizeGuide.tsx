@@ -18,7 +18,7 @@ export default function SizeGuide() {
               className="display text-parchment"
               style={{ fontSize: "clamp(2rem,5.5vw,3.6rem)", lineHeight: 1.04 }}
             >
-              Na dúvida, um abaixo
+              Encontre seu tamanho ideal
             </h2>
             <span aria-hidden className="blood-mark mt-6" />
             <p className="mt-5 max-w-md text-sm leading-relaxed text-mute">
