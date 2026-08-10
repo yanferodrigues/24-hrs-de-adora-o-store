@@ -160,8 +160,7 @@ export default function ProdutoPage() {
             congresso de louvor da Igreja Brasil Para Cristo (23/10/2026).
             Estampa do Rei montado no cavalo com a multidão em
             adoração (Apocalipse 19), impressa em algodão premium de gramatura
-            alta. Corte oversized streetwear, acabamento reforçado e estampa de
-            alta durabilidade.
+            alta. Acabamento reforçado e estampa de alta durabilidade.
           </p>
 
           {/* Corte */}
