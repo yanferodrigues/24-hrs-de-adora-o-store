@@ -17,10 +17,19 @@ export const PRODUCT = {
  */
 export const MAX_QTY_POR_ITEM = 10;
 
+export const CHILD_SIZES = [
+  "4 anos",
+  "6 anos",
+  "8 anos",
+  "10 anos",
+  "12 anos",
+];
+
 // Corte: Regular (base) e Oversized (mais amplo, +R$20)
 export const FITS = [
   { id: "Slimfit", label: "Slimfit", price: 90 },
   { id: "Oversized", label: "Oversized", price: 110 },
+  { id: "Infantil", label: "Infantil", price: 90 },
 ] as const;
 
 export const FEATURES = [

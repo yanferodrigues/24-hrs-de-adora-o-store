@@ -10,7 +10,12 @@ import {
   normalizeName,
   normalizePhone,
 } from "@/lib/auth-validation";
-import { FITS, MAX_QTY_POR_ITEM, PRODUCT } from "@/lib/data";
+import {
+  FITS,
+  CHILD_SIZES,
+  MAX_QTY_POR_ITEM,
+  PRODUCT,
+} from "@/lib/data";
 
 /**
  * Cria um pagamento Pix no Mercado Pago quando MP_ACCESS_TOKEN estiver definido.
@@ -55,14 +60,26 @@ function validateItem(raw: RawCartItem): ValidItem | null {
   const fit = FITS.find((f) => f.id === raw?.fit);
   if (!fit) return null;
 
-  const size = PRODUCT.sizes.find((s) => s === raw?.size);
+  const allowedSizes =
+    fit.id === "Infantil"
+      ? CHILD_SIZES
+      : PRODUCT.sizes;
+
+  const size = allowedSizes.find((s) => s === raw?.size);
   if (!size) return null;
 
   const qty = raw?.qty;
+
   if (typeof qty !== "number" || !Number.isInteger(qty)) return null;
   if (qty < 1 || qty > MAX_QTY_POR_ITEM) return null;
 
-  return { version: VERSION, fit: fit.id, size, qty, price: fit.price };
+  return {
+    version: VERSION,
+    fit: fit.id,
+    size,
+    qty,
+    price: fit.price,
+  };
 }
 
 export async function POST(req: Request) {

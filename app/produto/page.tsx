@@ -5,7 +5,12 @@ import Image from "next/image";
 import { Minus, Plus, Truck, ShieldCheck, type LucideIcon } from "lucide-react";
 import ShopHeader from "@/components/shop/ShopHeader";
 import CartDrawer from "@/components/shop/CartDrawer";
-import { PRODUCT, FITS, MAX_QTY_POR_ITEM } from "@/lib/data";
+import {
+  PRODUCT,
+  FITS,
+  CHILD_SIZES,
+  MAX_QTY_POR_ITEM,
+} from "@/lib/data";
 import { useStore, type Fit } from "@/lib/store";
 
 /* Galeria da PDP: os dois mockups (estampa inteira, reta) e três fotos no
@@ -13,50 +18,71 @@ import { useStore, type Fit } from "@/lib/store";
    quadrado — sem `object-top` o corte come a cabeça de quem está vestindo. */
 type View = { id: string; label: string; src: string; fit: string };
 
-const VIEWS: View[] = [
-  {
-    id: "frente",
-    label: "Frente",
-    src: "/imagens/mockup-frente.webp",
-    fit: "object-cover object-center",
-  },
-  {
-    id: "costas",
-    label: "Costas",
-    src: "/imagens/mockup-costas.webp",
-    fit: "object-cover object-center",
-  },
-  {
-    id: "slimfit",
-    label: "Frente",
-    src: "/imagens/modelo slimfit.png",
-    fit: "object-cover object-center",
-  },
-  {
-    id: "slimfit costas",
-    label: "Frente",
-    src: "/imagens/modelo slimfit costas.png",
-    fit: "object-cover object-center",
-  },
-  {
-    id: "no-corpo",
-    label: "No corpo",
-    src: "/pessoas/01.webp",
-    fit: "object-cover object-top",
-  },
-  {
-    id: "costas-corpo",
-    label: "Costas no corpo",
-    src: "/pessoas/05-costas.jpg",
-    fit: "object-cover object-top",
-  },
-  {
-    id: "detalhe",
-    label: "Detalhe",
-    src: "/pessoas/08-detalhe.jpg",
-    fit: "object-cover object-center",
-  },
-];
+const VIEWS_BY_FIT: Record<Fit, View[]> = {
+  Oversized: [
+    {
+      id: "oversized-frente",
+      label: "Frente",
+      src: "/imagens/mockup-frente.webp",
+      fit: "object-cover object-center",
+    },
+    {
+      id: "oversized-costas",
+      label: "Costas",
+      src: "/imagens/mockup-costas.webp",
+      fit: "object-cover object-center",
+    },
+    {
+      id: "oversized-corpo",
+      label: "No corpo",
+      src: "/pessoas/01.webp",
+      fit: "object-cover object-top",
+    },
+  ],
+
+  Slimfit: [
+    {
+      id: "slimfit-frente",
+      label: "Frente",
+      src: "/imagens/modelo slimfit.png",
+      fit: "object-cover object-center",
+    },
+    {
+      id: "slimfit-costas",
+      label: "Costas",
+      src: "/imagens/modelo slimfit costas.png",
+      fit: "object-cover object-center",
+    },
+    {
+      id: "slimfit-vestida",
+      label: "Vestida",
+      src: "/imagens/slimfit vestida.png",
+      fit: "object-cover object-center",
+    },
+  ],
+
+  Infantil: [
+    {
+      id: "infantil-frente",
+      label: "Frente",
+      src: "/imagens/camisa infantil.png",
+      fit: "object-cover object-center",
+    },
+    {
+      id: "infantil-costas",
+      label: "Costas",
+      src: "/imagens/camisa infantil costas.png",
+      fit: "object-cover object-center",
+    },
+    {
+      id: "infantil-vestida",
+      label: "Frente vestida",
+      src: "/pessoas/04.webp",
+      fit: "object-cover object-center",
+    },
+    
+  ],
+};
 
 export default function ProdutoPage() {
   const addToCart = useStore((s) => s.addToCart);
@@ -64,12 +90,20 @@ export default function ProdutoPage() {
 
   const [size, setSize] = useState<string>("M");
   const [qty, setQty] = useState(1);
-  const [viewId, setViewId] = useState<string>(VIEWS[0].id);
   const [fit, setFit] = useState<Fit>("Oversized");
+  const [viewId, setViewId] = useState<string>(
+    VIEWS_BY_FIT.Oversized[0].id
+  );
   const [addWarning, setAddWarning] = useState<string | null>(null);
 
   const unitPrice = FITS.find((f) => f.id === fit)?.price ?? PRODUCT.price;
-  const view = VIEWS.find((v) => v.id === viewId) ?? VIEWS[0];
+  const availableSizes =
+    fit === "Infantil" ? CHILD_SIZES : PRODUCT.sizes;
+
+  const views = VIEWS_BY_FIT[fit];
+
+  const view =
+    views.find((v) => v.id === viewId) ?? views[0];
 
   // Quantas unidades desse corte+tamanho já estão no carrinho — o teto vale
   // para a soma, não só para o que está sendo adicionado agora.
@@ -115,7 +149,7 @@ export default function ProdutoPage() {
           </div>
 
           <div className="grid grid-cols-5 gap-2">
-            {VIEWS.map((v) => (
+            {views.map((v) => (
               <button
                 key={v.id}
                 onClick={() => setViewId(v.id)}
@@ -172,7 +206,22 @@ export default function ProdutoPage() {
               {FITS.map((f) => (
                 <button
                   key={f.id}
-                  onClick={() => setFit(f.id)}
+                  onClick={() => {
+                    setFit(f.id);
+
+                    // Muda automaticamente para a primeira imagem
+                    // do corte selecionado
+                    setViewId(VIEWS_BY_FIT[f.id][0].id);
+
+                    if (f.id === "Infantil") {
+                      setSize("4 anos");
+                    } else if (fit === "Infantil") {
+                      setSize("M");
+                    }
+
+                    setQty(1);
+                    setAddWarning(null);
+                  }}
                   aria-pressed={fit === f.id}
                   className="flex h-11 items-center gap-2 rounded-full border px-4 font-mono text-xs transition-colors"
                   style={{
@@ -194,7 +243,7 @@ export default function ProdutoPage() {
               Tamanho · <span className="text-ink">{size}</span>
             </span>
             <div className="mt-3 flex flex-wrap gap-2">
-              {PRODUCT.sizes.map((s) => (
+              {availableSizes.map((s) => (
                 <button
                   key={s}
                   onClick={() => setSize(s)}
