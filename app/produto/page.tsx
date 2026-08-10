@@ -38,6 +38,18 @@ const VIEWS_BY_FIT: Record<Fit, View[]> = {
       src: "/pessoas/01.webp",
       fit: "object-cover object-top",
     },
+    {
+      id: "oversized-corpo-costas",
+      label: "No corpo",
+      src: "/pessoas/05-costas.jpg",
+      fit: "object-cover object-top",
+    },
+    {
+      id: "oversized-corpo-feminino",
+      label: "No corpo",
+      src: "/pessoas/02.webp",
+      fit: "object-cover object-top",
+    },
   ],
 
   Slimfit: [
