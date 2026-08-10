@@ -111,12 +111,6 @@ export default function Hero() {
           transition={{ duration: 1, ease, delay: 0.7 }}
           className="mt-9 flex flex-col items-center gap-4"
         >
-          <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-mute-2">
-            Vi o céu aberto e diante de mim um cavalo branco, cujo cavaleiro se chama Fiel e Verdadeiro. <br /> Ele julga e guerreia com justiça. <br /> Seus olhos são como chamas de fogo, e em sua cabeça há muitas coroas. <br /> Ele tem um nome que ninguém conhece, a não ser ele mesmo.
-            Está vestido com um manto tingido de sangue, e o seu nome é Palavra de Deus. <br /> Os exércitos do céu o seguiam, vestidos de linho fino, branco e puro, e montados em cavalos brancos.
-            <br /> De sua boca sai uma espada afiada, com a qual ferirá as nações. <br /> “Ele as governará com cetro de ferro.” <br /> Ele pisa o lagar do vinho do furor da ira do Deus todo-poderoso.
-            <br /> Em seu manto e em sua coxa está escrito este nome: REI DOS REIS E SENHOR DOS SENHORES.
-          </span>
         </motion.div>
       </div>
     </section>
