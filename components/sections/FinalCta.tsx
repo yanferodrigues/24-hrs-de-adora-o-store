@@ -38,7 +38,7 @@ export default function FinalCta() {
           <div className="mt-10 flex flex-col items-center gap-4">
             <BuyButton label="Quero a minha" showPrice />
             <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-mute-2">
-              Edição limitada · entrega até {PRODUCT.eventDateLabel}
+              Edição limitada · pedidos até {PRODUCT.eventDateLabel}
             </span>
           </div>
         </Reveal>
