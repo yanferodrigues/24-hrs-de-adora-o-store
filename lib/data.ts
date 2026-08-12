@@ -23,6 +23,8 @@ export const CHILD_SIZES = [
   "8 anos",
   "10 anos",
   "12 anos",
+  "14 anos",
+  "16 anos",
 ];
 
 // Corte: Regular (base) e Oversized (mais amplo, +R$20)
