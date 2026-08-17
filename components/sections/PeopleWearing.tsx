@@ -24,27 +24,30 @@ type Slot = {
    sem precisar abrir a página do produto. */
 const SLOTS: Slot[] = [
   { src: "/pessoas/01.webp", file: "/pessoas/01.webp", cap: "Frente · 01" },
-  { src: "/pessoas/02.webp", file: "/pessoas/02.webp", cap: "Frente · 02" },
-  { src: "/imagens/slimfit vestida.png", file: "/pessoas/03.webp", cap: "Frente · 03" },
+  {
+    src: "/pessoas/06-costas.jpg",
+    file: "/pessoas/06-costas.jpg",
+    cap: "Costas · no corpo",
+    fit: "object-cover object-top",
+  },
   { src: "/pessoas/04.webp", file: "/pessoas/04.webp", cap: "Frente · 04" },
+
+  {
+    src: "/pessoas/07-costas.jpg",
+    file: "/pessoas/07-costas.jpg",
+    cap: "Costas · Apocalipse 19",
+    fit: "object-cover object-top",
+  },
+  // { src: "/pessoas/02.webp", file: "/pessoas/02.webp", cap: "Frente · 02" },
+  // { src: "/imagens/slimfit vestida.png", file: "/pessoas/03.webp", cap: "Frente · 03" },
   // {
   //   src: "/pessoas/05-costas.jpg",
   //   file: "/pessoas/05-costas.jpg",
   //   cap: "Costas · o Rei",
   //   fit: "object-cover object-top",
   // },
-  // {
-  //   src: "/pessoas/07-costas.jpg",
-  //   file: "/pessoas/07-costas.jpg",
-  //   cap: "Costas · Apocalipse 19",
-  //   fit: "object-cover object-top",
-  // },
-  // {
-  //   src: "/pessoas/06-costas.jpg",
-  //   file: "/pessoas/06-costas.jpg",
-  //   cap: "Costas · no corpo",
-  //   fit: "object-cover object-top",
-  // },
+
+
   // {
   //   src: "/pessoas/08-detalhe.jpg",
   //   file: "/pessoas/08-detalhe.jpg",

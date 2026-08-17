@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Projeto
 
-Landing page + página de produto (marketplace) da **24 Horas de Adoração Store** — camiseta oficial **VOLTAREI** do congresso de jovens (o Rei no cavalo branco, **Apocalipse 19**). Camiseta preta, uma estampa. Preço **R$ 80** (corte Regular) / **R$ 100** (Oversized), evento **15/10/2026**. Pagamento por **Pix**, **retirada presencial** no congresso.
+Landing page + página de produto (marketplace) da **24 Horas de Adoração Store** — camiseta oficial **VOLTAREI** do congresso de jovens (o Rei no cavalo branco, **Apocalipse 19**). Camiseta preta, uma estampa. Preço **R$ 90** (corte Regular) / **R$ 110** (Oversized), evento **10/09/2026**. Pagamento por **Pix**, **retirada presencial** no congresso.
 
 Estética **"relíquia dourada"**: **branco gelo** + **ouro** (lettering/ilustração da estampa) + **vermelho-sangue** (Apocalipse 19) + preto quente (texto). **Sem 3D** — a landing usa os assets de estampa (com alpha) e fotos.
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { Reveal } from "@/components/Reveal";
-import { SIZE_GUIDE, PRODUCT } from "@/lib/data";
+import { PRODUCT, SIZE_GUIDE, SIZE_GUIDE_SLIMFIT } from "@/lib/data";
 import { useStore } from "@/lib/store";
 
 export default function SizeGuide() {
@@ -11,7 +11,7 @@ export default function SizeGuide() {
   return (
     <section className="relative py-28">
       <div className="wrap grid gap-12 lg:grid-cols-2">
-        <div>
+        <div className="lg:flex lg:flex-col lg:justify-center">
           <Reveal>
             <p className="sacred mb-4">Os Tamanhos</p>
             <h2
@@ -54,35 +54,56 @@ export default function SizeGuide() {
         </div>
 
         <Reveal delay={0.05}>
-          <div className="overflow-hidden rounded-2xl border border-line">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-line text-left font-mono text-[10px] uppercase tracking-[0.14em] text-mute-2">
-                  <th className="p-4">Tam.</th>
-                  <th className="p-4">Peito (cm)</th>
-                  <th className="p-4">Comprimento (cm)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {SIZE_GUIDE.map((r) => (
-                  <tr
-                    key={r.size}
-                    className="border-b border-line-soft transition-colors last:border-0"
-                    style={{
-                      background:
-                        size === r.size ? "var(--surface-2)" : "transparent",
-                    }}
-                  >
-                    <td className="p-4 font-semibold text-parchment">{r.size}</td>
-                    <td className="p-4 tabular-nums text-mute">{r.chest}</td>
-                    <td className="p-4 tabular-nums text-mute">{r.length}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="space-y-8">
+            {[
+              { modeling: "oversized", measurements: SIZE_GUIDE },
+              { modeling: "slimfit", measurements: SIZE_GUIDE_SLIMFIT },
+            ].map(({ modeling, measurements }) => (
+              <div key={modeling}>
+                <h3 className="display mb-3 text-xl text-parchment">
+                  {modeling}
+                </h3>
+                <div className="overflow-hidden rounded-2xl border border-line">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-line text-left font-mono text-[10px] uppercase tracking-[0.14em] text-mute-2">
+                        <th className="p-4">Tam.</th>
+                        <th className="p-4">Largura (cm)</th>
+                        <th className="p-4">Comprimento (cm)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {measurements.map((r) => (
+                        <tr
+                          key={r.size}
+                          className="border-b border-line-soft transition-colors last:border-0"
+                          style={{
+                            background:
+                              size === r.size
+                                ? "var(--surface-2)"
+                                : "transparent",
+                          }}
+                        >
+                          <td className="p-4 font-semibold text-parchment">
+                            {r.size}
+                          </td>
+                          <td className="p-4 tabular-nums text-mute">
+                            {r.chest}
+                          </td>
+                          <td className="p-4 tabular-nums text-mute">
+                            {r.length}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))}
           </div>
         </Reveal>
       </div>
     </section>
+    
   );
 }

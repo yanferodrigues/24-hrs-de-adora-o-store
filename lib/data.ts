@@ -4,8 +4,8 @@ export const PRODUCT = {
   price: 90, // preço base (corte Regular)
   priceLabel: "R$ 90",
   currency: "BRL",
-  eventDate: "2026-08-31T00:00:00-03:00", // 15/10/2026
-  eventDateLabel: "31 de Agosto de 2026",
+  eventDate: "2026-09-10T00:00:00-03:00", // 15/10/2026
+  eventDateLabel: "10 de Setembro de 2026",
   tagline: "Ele disse: voltarei",
   sizes: ["PP", "P", "M", "G", "GG"],
 };
@@ -90,6 +90,14 @@ export const SIZE_GUIDE = [
   { size: "M", chest: 60, length: 78 },
   { size: "G", chest: 61, length: 79 },
   { size: "GG", chest: 64, length: 84 },
+];
+
+export const SIZE_GUIDE_SLIMFIT = [
+  { size: "PP", chest: 46, length: 67 },
+  { size: "P", chest: 51.5, length: 70 },
+  { size: "M", chest: 54, length: 74 },
+  { size: "G", chest: 55, length: 74 },
+  { size: "GG", chest: 62, length: 76 },
 ];
 
 export const FAQ = [
