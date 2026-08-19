@@ -198,12 +198,25 @@ export async function POST(req: Request) {
     }),
   });
 
-  if (!resp.ok) {
-    return NextResponse.json(
-      { configured: true, error: "mp_error" },
-      { status: 502 }
-    );
-  }
+if (!resp.ok) {
+  const mpError = await resp.text();
+
+  console.error(
+    "[Mercado Pago] Erro ao gerar Pix:",
+    resp.status,
+    mpError
+  );
+
+  return NextResponse.json(
+    {
+      configured: true,
+      error: "mp_error",
+      mpStatus: resp.status,
+      mpDetails: mpError,
+    },
+    { status: 502 }
+  );
+}
 
   const payment = await resp.json();
   const tx = payment?.point_of_interaction?.transaction_data;
